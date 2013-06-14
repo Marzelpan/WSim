@@ -1,8 +1,8 @@
 /**
  *  \file   msp430_adc12.c
  *  \brief  MSP430 Adc12 controller
- *  \author Antoine Fraboulet
- *  \date   2006
+ *  \author Antoine Fraboulet, David Gräff
+ *  \date   2006, 2013
  **/
 
 #include <stdlib.h>
