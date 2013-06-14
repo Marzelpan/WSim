@@ -150,21 +150,13 @@ dnl ===========
 gui_type="none"
 AC_ARG_ENABLE([gui],AS_HELP_STRING([--enable-gui],[GUI (default enabled)]))
 if test "${enable_gui}" != "no" ; then
+    AC_PROG_CXX
     gui_sum="yes"
     AC_DEFINE([GUI],[1],[Defines wether a GUI is available])
 else
     gui_sum="no"
 fi
 AM_CONDITIONAL([BUILD_GUI], [test "${gui_sum}" = "yes"])
-
-dnl dnl SDL ui mode
-dnl dnl ===========
-dnl AC_ARG_ENABLE([sdl],AS_HELP_STRING([--enable-sdl],[SDL GUI for devices (default disabled)]))
-dnl if test "${enable_sdl}" = "yes" ; then
-dnl     gui_type="SDL"
-dnl     AC_DEFINE([GUI_SDL],[1],[Defines wether a SDL GUI is available])
-dnl fi
-AM_CONDITIONAL([BUILD_GUI_SDL], [test "${gui_type}" = "SDL_is_deprecated"])
 
 dnl Gprof mode
 dnl ==========
