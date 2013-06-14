@@ -628,6 +628,7 @@ typedef struct _infomem_t infomem_t;
 	#define __msp430_have_pmm
 	#define __msp430_have_rtc
 	#define __msp430_have_new_sfr
+	#define __msp430_have_adc12
 
 	// Flash erase timings
 	#define FLASH_WRITE_TIMING_BYTE       30
@@ -638,7 +639,6 @@ typedef struct _infomem_t infomem_t;
 	#define FLASH_ERASE_TIMING_SEG      4819
 
 	//BASE Register (OFFSET)
-	#define USCIA_BASE        0x05d
 	#define SFR_BASE          0x100
 	#define PMM_BASE          0x120
 	#define FLASHCTL_BASE     0x140
@@ -650,8 +650,14 @@ typedef struct _infomem_t infomem_t;
 	#define TIMER_TA0_BASE    0x340
 	#define TIMER_TA1_BASE    0x380
 	#define RTC_BASE          0x4a0
+  #define USCIA_BASE        0x5c0
 	#define USCIB_BASE        0x5e0
 	#define LCDB_BASE         0xa00
+	#define ADC12_BASE        0x700
+  #define ADC12M_BASE       0x700
+  #define ADC12MC_BASE      0x700
+  
+  #define ADC12A_PLUS
 
 	#define DIGIIO_NEW_OFFSETS
 	

@@ -43,12 +43,20 @@
 
 enum adc12_addr_t {
   /* control offset address are different for ADC12_A */
-
+  #ifdef ADC12A_PLUS
+  ADC12CTL0   = (ADC12_BASE + 0x0000), /* 16 */
+  ADC12CTL1   = (ADC12_BASE + 0x0002), /* 16 */
+  ADC12CTL2   = (ADC12_BASE + 0x0004), /* 16 */
+  ADC12IFG    = (ADC12_BASE + 0x000A), /* 16 */
+  ADC12IE     = (ADC12_BASE + 0x000C), /* 16 */
+  ADC12IV     = (ADC12_BASE + 0x000E), /* 16 */
+  #else
   ADC12CTL0   = (ADC12_BASE + 0x0000), /* 16 */
   ADC12CTL1   = (ADC12_BASE + 0x0002), /* 16 */
   ADC12IFG    = (ADC12_BASE + 0x0004), /* 16 */
   ADC12IE     = (ADC12_BASE + 0x0006), /* 16 */
   ADC12IV     = (ADC12_BASE + 0x0008), /* 16 */
+  #endif
   
   ADC12MEM0   = (ADC12M_BASE + 0x0020), /* 16 */
   ADC12MEM1   = (ADC12M_BASE + 0x0022),
