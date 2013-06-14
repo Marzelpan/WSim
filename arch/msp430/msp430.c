@@ -209,7 +209,6 @@ int msp430_mcu_create(int xt1)
   msp430_lcdb_create();
   msp430_rtc_create();
 
-
   MCU_CLOCK.lfxt1_freq = xt1;
 #if defined(__msp430_have_xt2)
   MCU_CLOCK.xt2_freq   = xt2;
@@ -321,7 +320,6 @@ void msp430_devices_update(unsigned int cycles)
   msp430_sfr_update();
   msp430_svs_update();
   msp430_sysrstiv_update();
-  
   msp430_hwmul_update();
   msp430_digiIO_update();
   msp430_pmm_update();
@@ -358,6 +356,7 @@ void msp430_devices_update(unsigned int cycles)
 void mcu_update_done()
 {
   uint32_t signal;
+    
   /* timers capture operations                    */
   msp430_timerA_capture();
   msp430_timerB_capture();
@@ -576,7 +575,7 @@ int mcu_registers_number()
 /* ************************************************** */
 /* ************************************************** */
 
-uint16_t mcu_register_get(int i)
+uint32_t mcu_register_get(int i)
 {
   return MCU_REGS[i];
 }
@@ -585,7 +584,7 @@ uint16_t mcu_register_get(int i)
 /* ************************************************** */
 /* ************************************************** */
 
-void mcu_register_set(int i, uint16_t v)
+void mcu_register_set(int i, uint32_t v)
 {
   MCU_REGS[i] = v;
 }
