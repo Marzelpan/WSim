@@ -10,18 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <QApplication>
-#include <QWidget>
-#include <QMainWindow>
-#include <QPushButton>
-#include <QEvent>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QDebug>
-#include <QQueue>
-#include <QMutex>
-#include <QMutexLocker>
-#include <QTime>
+#include "qtapplication.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,6 +24,7 @@ extern "C" {
 #endif
 
 #include "ui.h"
+// TODO: we are using pthread here, this may not be available on all supported plattforms
 #include <pthread.h>
 
 #define UNUSED __attribute__((unused))  
@@ -64,169 +54,6 @@ static struct moption_t title_opt = {
   0, 0
 };
 
-int _argc;
-char** _argv;
-class wsimQtApplication: public QApplication {
-	public:
-	wsimQtApplication(int argc, char* argv[]) : QApplication(argc, argv), framebufferData(0),currentTimerID(0) {}
-	// GUI
-	QWidget window;
-	QImage image;
-	QLabel imageLabel;
-	// fast
-// 	QTime timer;
-	int currentTimerID;
-	// core to gui thread transport variables
-	int w, h;
-	QString title;
-	uint8_t* framebufferData;
-	int memsize;
-	// gui to core thread
-	uint32_t buttonUp;
-	uint32_t buttonDown;
-	
-	class wsimButton : public QPushButton {
-		public:
-			int buttoncode;
-			wsimQtApplication* app;
-			wsimButton(const QString& title, int buttoncode, wsimQtApplication* app) : QPushButton(title) {this->buttoncode = buttoncode;this->app=app;}
-			bool event ( QEvent * e ) {
-				if (e->type() == QEvent::MouseButtonPress) {
-					app->setbuttonDown(buttoncode);
-				}
-				else if (e->type() == QEvent::MouseButtonRelease) {
-					app->setbuttonUp(buttoncode);
-				}
-				QPushButton::event(e);
-			}
-	};
-	
-	enum wsimGUIEvents {GUIWindowEvent, CloseWindowEvent, ShowData};
-
-	// own events
-	class wsimEvent : public QEvent {
-		private:
-			wsimGUIEvents mType;
-		public:
-			wsimEvent(wsimGUIEvents type) : QEvent(QEvent::User) {
-				mType = type;
-			}
-			int wsimtype() {return mType;}
-	};
-	
-	void setbuttonDown(int code) {
-		buttonDown |= code;
-	}
-	void setbuttonUp(int code) {
-		buttonUp |= code;
-	}
-	void setupGUI() {
-		image = QImage(w,h, QImage::Format_RGB888);
-		image.fill(Qt::white);
-		window.setWindowTitle(title);
-		window.resize(w, h);
-		QHBoxLayout* buttonLayout = new QHBoxLayout;
-		buttonLayout->addWidget(new wsimButton("#", UI_BUTTON_2, this));
-		buttonLayout->addWidget(new wsimButton("*", UI_BUTTON_1, this));
-		buttonLayout->addWidget(new wsimButton("Licht", UI_BUTTON_4, this));
-		buttonLayout->addWidget(new wsimButton("Oben", UI_BUTTON_3, this));
-		buttonLayout->addWidget(new wsimButton("Unten", UI_BUTTON_5, this));
-		QVBoxLayout* layout = new QVBoxLayout;
-		layout->addLayout(buttonLayout);
-		imageLabel.setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-		imageLabel.setScaledContents(true);
-		imageLabel.resize(w,h);
-		layout->addWidget(&imageLabel);
-		window.setLayout(layout);
-		window.show();
-	}
-	
-	void showData() {
-		for(int y=0; y < h; y++) {
-			int idx_buff =  y * w * 3;
-			for(int x=0; x < w; x++)
-			{
-				image.setPixel( x,y, qRgb(framebufferData[idx_buff + 0], framebufferData[idx_buff + 1], framebufferData[idx_buff + 2] ));
-				idx_buff += 3;
-			}
-		}
-		imageLabel.setPixmap(QPixmap::fromImage(image));
-	}
-	
-	// event handling
-	bool event ( QEvent * e ) {
-		if (e->type()==QEvent::User) {
-			wsimEvent* ee = static_cast<wsimEvent*>(e);
-			switch(ee->wsimtype()) {
-				case GUIWindowEvent:
-					setupGUI(); break;
-				case CloseWindowEvent:
-					window.close();
-					this->exit(0);
-				break;
-				case ShowData: {
-					if (currentTimerID)
-						break;
-					currentTimerID = startTimer(50);
-					showData();
-				}
-				break;
-			}
-		}
-		return QApplication::event(e);
-	}
-	
-	void timerEvent ( QTimerEvent * event ) {
-		if (event->timerId() != currentTimerID)
-			return;
-		killTimer(currentTimerID);
-		currentTimerID = 0;
-		showData();
-	}
-	
-	// core to gui thread communication
-	void setWindowData(int w, int h, const char* title, int memsize) {
-		this->w = w;
-		this->h = h;
-		this->title = title;
-		this->memsize = memsize;
-  		if (!framebufferData)
-  			framebufferData = new uint8_t[memsize];
-		
-		this->postEvent(this, new wsimEvent(GUIWindowEvent));
-	}
-	
-	void close() {
-		this->postEvent(this, new wsimEvent(CloseWindowEvent));
-	}
-	
-	// slow down to 50ms update time
-	void copyBitmap(uint8_t* data) {
-		framebufferData = data;
- 		this->postEvent(this, new wsimEvent(ShowData));
-	}
-};
-wsimQtApplication* app;
-
-void *StartQAppThread(void*) {
-  startWorker(_argc, _argv);
-  qDebug() << "Emulator beendet!";
-  pthread_exit(NULL);
-}
-
-int main(int argc, char* argv[])
-{
-  app = new wsimQtApplication(argc, argv);
-  
-	_argc = argc;
-	_argv = argv;
-   pthread_t thread1;  
-   int rc = pthread_create(&thread1, NULL, StartQAppThread, 0);
-
-  app->exec();
-  return 0;
-}
-
 int ui_options_add(void)
 {
   options_add(& gui_opt            );
@@ -236,10 +63,7 @@ int ui_options_add(void)
 
 int ui_create(int w, int h, int id)
 {
-	
-
-
-#define MAX_TITLE_SIZE 20
+  #define MAX_TITLE_SIZE 20
   char name[MAX_TITLE_SIZE];
 
   if (id != -1)
