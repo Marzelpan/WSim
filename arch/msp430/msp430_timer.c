@@ -2404,7 +2404,7 @@ void msp430_timerTA0_write(uint16_t addr, int16_t val)
 
   case TA0EX0:
     if (val!=0) /* only case !=0 is not implemented. */
-		ERROR("msp430:timerTA0: TAxEX0 not implemented\n");
+      ERROR("msp430:timerTA0: TAxEX0 with value 0x%04x not implemented\n", val);
     break;
 
   default:
@@ -2928,7 +2928,7 @@ void msp430_timerTA1_write(uint16_t addr, int16_t val)
 
   case TA1EX0:
     if (val!=0) /* only case !=0 is not implemented. */
-    ERROR("msp430:timerTA1: TAxEX0 not implemented\n");
+    ERROR("msp430:timerTA1: TAxEX0 with value 0x%04x not implemented\n", val);
     break;
 
   default:
