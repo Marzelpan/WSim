@@ -59,6 +59,10 @@ at the end of the byte stream of the aborted frame in the log file.
 
 ***************************************************************************************/
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void logpkt_init               (int do_log_pkt, char* logpkt, const char* logpktfilename);
 
 /* public encapsulation functions */
@@ -97,5 +101,8 @@ void logpkt_tx_abort_pkt_nop   (int interface_id, const char* error);
 void logpkt_state_save_nop     (void);
 void logpkt_state_restore_nop  (void);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif //_LOGPKT_H_
