@@ -527,7 +527,7 @@ int at45db_flash_dump(int dev, const char *name)
 int at45db_device_create(int dev, int UNUSED id)
 {
   machine.device[dev].reset         = at45db_reset;
-  machine.device[dev].delete        = at45db_delete;
+  machine.device[dev].deleteFnt        = at45db_delete;
   machine.device[dev].power_up      = at45db_power_up;
   machine.device[dev].power_down    = at45db_power_down;
 

@@ -233,7 +233,7 @@ int cc1100_device_create (int dev_num, int fxosc_mhz, char *antenna)
   struct _cc1100_t *cc1100 = (struct _cc1100_t *) machine.device[dev_num].data;
 
   machine.device[dev_num].reset         = cc1100_reset;
-  machine.device[dev_num].delete        = cc1100_delete;
+  machine.device[dev_num].deleteFnt        = cc1100_delete;
   
   machine.device[dev_num].power_up      = cc1100_power_up;
   machine.device[dev_num].power_down    = cc1100_power_down;
@@ -275,7 +275,7 @@ int cc2500_device_create (int dev_num, int fxosc_mhz, char *antenna)
   struct _cc1100_t *cc1100 = (struct _cc1100_t *) machine.device[dev_num].data;
 
   machine.device[dev_num].reset         = cc1100_reset;
-  machine.device[dev_num].delete        = cc1100_delete;
+  machine.device[dev_num].deleteFnt        = cc1100_delete;
   
   machine.device[dev_num].power_up      = cc1100_power_up;
   machine.device[dev_num].power_down    = cc1100_power_down;

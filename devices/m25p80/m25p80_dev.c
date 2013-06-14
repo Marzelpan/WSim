@@ -397,7 +397,7 @@ int m25p_flash_dump(int dev, const char *name)
 int m25p_device_create(int dev, int UNUSED id)
 {
   machine.device[dev].reset         = m25p_reset;
-  machine.device[dev].delete        = m25p_delete;
+  machine.device[dev].deleteFnt        = m25p_delete;
   machine.device[dev].power_up      = m25p_power_up;
   machine.device[dev].power_down    = m25p_power_down;
 

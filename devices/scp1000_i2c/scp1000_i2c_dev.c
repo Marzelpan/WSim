@@ -21,7 +21,7 @@ int scp1000_i2c_device_create(int dev_num)
 {
   HW_DMSG_DEV("scp1000 : device create");
   machine.device[dev_num].reset = scp1000_i2c_reset;
-  machine.device[dev_num].delete = scp1000_i2c_delete;
+  machine.device[dev_num].deleteFnt = scp1000_i2c_delete;
 
   machine.device[dev_num].update = scp1000_i2c_update;
 
