@@ -498,10 +498,6 @@ case "${host}" in
 	CFLAGS="$CFLAGS -DLINUX"
 	NEEDLARGEFILES="yes"
 	EXTRALIBS="$EXTRALIBS"
-	# backup GUI for unix machines
-	if test "${gui_sum}" = "yes" -a "${gui_type}" = "none" ; then 
-	    gui_type="X11"
-	fi
 	;;
    
 	*-*-solaris* )
@@ -510,10 +506,6 @@ case "${host}" in
 	HOSTTYPE="Solaris"
 	CFLAGS="$CFLAGS -DSOLARIS"
 	EXTRALIBS="$EXTRALIBS -lsocket -lnsl"
-	# backup GUI for unix machines
-	if test "${gui_sum}" = "yes" -a "${gui_type}" = "none" ; then 
-	    gui_type="X11"
-	fi
 	;;
 
 	*-*-cygwin )
@@ -521,7 +513,6 @@ case "${host}" in
 	HOSTTYPE="Cygwin"
 	NEEDLARGEFILES="yes"
 	if test "${gui_sum}" = "yes" -a "${gui_type}" = "none" ; then 
-	    gui_type="WIN"
 	    # the contradictory setting of subsystems below is needed because
 	    # we need a console application, yet we need the GUI libraries that
 	    # -mwindows adds to the link command.  (We could probably also get
@@ -538,13 +529,6 @@ case "${host}" in
 	HOSTTYPE="Mingw32"
 	NEEDLARGEFILES="yes"
 	EXTRALIBS="$EXTRALIBS -lws2_32 -mwindows -lmingw32"
-	if test "${gui_sum}" = "yes" -a "${gui_type}" = "none" ; then 
-	    gui_type="WIN"
-	fi
-dnl 	if test "${gui_sum}" = "yes" -a "${gui_type}" = "SDL" ; then
-dnl 	   # hack to avoid missing SDL_main linker complaint
-dnl 	   LDFLAGS="$LDFLAGS -u_SDL_main"
-dnl 	fi
 	;;
 
 	*-apple-darwin* )
@@ -554,11 +538,6 @@ dnl 	fi
 	HOSTTYPE="MacOSX"
 	CFLAGS="$CFLAGS -DMACOSX"
 	NEEDLARGEFILES="yes"
-	if test "${gui_sum}" = "yes" -a "${gui_type}" = "none" ; then 
-	   # use X11 version until someone builds a Cocoa interface
-	   gui_type="X11"
-	   LDFLAGS="$LDFLAGS -L/usr/X11/lib"
-	fi
 	;;
 esac
 
@@ -590,43 +569,23 @@ AM_CONDITIONAL([BUILD_MACOSX],  [test "$HOSTTYPE" = "MacOSX"])
 AM_CONDITIONAL([BUILD_MINGW32], [test "$HOSTTYPE" = "Mingw32"])
 AM_CONDITIONAL([BUILD_CYGWIN],  [test "$HOSTTYPE" = "Cygwin"])
 
-AM_CONDITIONAL([BUILD_GUI_X11], [test "${gui_type}" = "X11"])
-if test "${gui_type}" = "X11" ; then
+if  test "${gui_sum}" = "yes" ; then
    AC_DEFINE([GUI_X11], [1], [Defines wether a X11 GUI is available])
-   EXTRALIBS="$EXTRALIBS -lX11"
-fi
-
-AM_CONDITIONAL([BUILD_GUI_WIN], [test "${gui_type}" = "WIN"])
-if test "${gui_type}" = "WIN" ; then
-   AC_DEFINE([GUI_WIN], [1], [Defines wether a Windows native GUI is available])
-   EXTRALIBS="$EXTRALIBS"
-fi
-
-AM_CONDITIONAL([BUILD_GUI_NONE], [test "${gui_type}" = "none"])
-if test "${gui_type}" = "none" ; then
+   AC_DEFINE([GUI_QT4], [1], [Defines wether a X11 GUI is available])
+   QT4DIR="/usr"
+   CPPFLAGS="$CPPFLAGS -I$QT4DIR/include/qt4 -I$QT4DIR/include/qt4/QtCore -I$QT4DIR/include/qt4/QtGui"
+   EXTRALIBS="$EXTRALIBS -lX11 -lQtGui -lQtCore -L$QT4DIR/lib"
+   gui_type="Qt4"
+else
    AC_DEFINE([GUI_NONE], [1], [Defines wether No-GUI is selected])
 fi
+AM_CONDITIONAL([BUILD_GUI_QT4], [test "${gui_type}" = "Qt4"])
+AM_CONDITIONAL([BUILD_GUI_NONE], [test "${gui_type}" = "none"])
+
 
 #if test "${zlib_sum}" = "system" ; then 
 #   EXTRALIBS="$EXTRALIBS -lz"
 #fi
-
-dnl --------------------------------------------------------------
-dnl Checks for libraries.
-dnl --------------------------------------------------------------
-dnl if test "${enable_sdl}" = "yes" ; then
-dnl 	SDL_VERSION=1.2.5
-dnl 	AM_PATH_SDL($SDL_VERSION,   :,  AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])	)
-dnl 
-dnl 	if test "$HOSTTYPE" = "Cygwin" ; then 
-dnl 		AC_MSG_NOTICE([stripping MinGW cruft from SDL_CFLAGS/_LIBS for Worldsens on Cygwin])
-dnl 		SDL_CFLAGS="$(echo "$SDL_CFLAGS" | sed -e 's,-I/usr/include/mingw,,;s,-mno-cygwin,,;s,-Dmain=SDL_main,,' )"
-dnl 		SDL_LIBS="$(echo "$SDL_LIBS" | sed -e 's,-lmingw32,,;s,-mno-cygwin,,;s,-mwindows,,;s,-lSDLmain,,' )"
-dnl 	fi
-dnl 
-dnl 	CFLAGS="$CFLAGS $SDL_CFLAGS"
-dnl 	EXTRALIBS="$EXTRALIBS $SDL_LIBS"
-dnl fi
 
 dnl Wextra && Werror
 dnl ================
