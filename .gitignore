@@ -1,3 +1,4 @@
+# Object files, tool outputs
 *.in
 *.o
 *.d
@@ -10,10 +11,16 @@
 *.vcd
 *.pkt
 *.nc
+*.a
+config.h
+stamp-h1
+
+# Automake
 /aclocal.m4
 /autom4te.cache
 /compile
 /config.guess
+/config.status
 /config.h.in
 /config.sub
 /configure
@@ -23,3 +30,24 @@
 /install-sh
 /missing
 doc/wsim-web/htdocs/
+
+# Makefiles
+Makefile
+platforms/Makefile
+platforms/*/Makefile
+devices/*/Makefile
+*.deps
+src/Makefile
+machine/Makefile
+devices/Makefile
+doc/Makefile
+libconsole/Makefile
+liblogpkt/Makefile
+libwsnet/Makefile
+libtracer/Makefile
+libselect/Makefile
+liblogger/Makefile
+libgui/Makefile
+libetrace/Makefile
+libgdb/Makefile
+libelf/Makefile
