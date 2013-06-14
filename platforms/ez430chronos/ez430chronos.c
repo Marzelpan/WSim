@@ -133,21 +133,19 @@ int system_delete(int UNUSED dev)
 int system_create(int dev_num)
 {
     machine.device[dev_num].reset = system_reset;
-    machine.device[dev_num].delete = system_delete;
+    machine.device[dev_num].deleteFnt = system_delete;
     machine.device[dev_num].state_size = sizeof (struct ez430chronos_struct_t);
     machine.device[dev_num].name = "System Platform";
 
-    STDOUT("%s:\n", NAME);
-    STDOUT("%s: =========================\n", NAME);
-    STDOUT("%s: '*' = '1'\n", NAME);
-    STDOUT("%s: '#' = '2'\n", NAME);
-    STDOUT("%s: 'arrow up' = '3'\n", NAME);
-    STDOUT("%s: 'light' = '4'\n", NAME);
-    STDOUT("%s: 'arrow down' = '5'\n", NAME);
-    STDOUT("%s:\n", NAME);
-    STDOUT("%s: 'q' to close\n", NAME);
-    STDOUT("%s: =========================\n", NAME);
-    STDOUT("%s:\n", NAME);
+//     STDOUT("%s: ========= SuS WSim =========\n", NAME);
+//     STDOUT("%s: '*' = '1'\n", NAME);
+//     STDOUT("%s: '#' = '2'\n", NAME);
+//     STDOUT("%s: 'arrow up' = '3'\n", NAME);
+//     STDOUT("%s: 'light' = '4'\n", NAME);
+//     STDOUT("%s: 'arrow down' = '5'\n", NAME);
+//     STDOUT("%s:\n", NAME);
+//     STDOUT("%s: 'q' to close\n", NAME);
+//     STDOUT("%s: ============================\n", NAME);
     return 0;
 }
 
