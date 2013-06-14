@@ -318,7 +318,7 @@ static inline uint32_t machine_run_internal(void)
 	    sig = mcu_signal_get();
 	  }
       }
-
+WARNING("run\n");
     /* time and instruction counters */
     if (machine.run_limit != 0)
       {
