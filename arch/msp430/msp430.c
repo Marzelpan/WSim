@@ -175,6 +175,7 @@ int msp430_mcu_create(int xt1)
   // basic
   msp430_sfr_create();
   msp430_svs_create();
+  msp430_sharedreference_create();
   msp430_sysrstiv_create();
   msp430_hwmul_create();
   msp430_digiIO_create();
@@ -264,6 +265,7 @@ void mcu_reset()
   msp430_alu_reset();
   msp430_svs_reset();
   msp430_sysrstiv_reset();
+  msp430_sharedreference_reset();
   msp430_hwmul_reset();
   msp430_digiIO_reset();
   msp430_pmm_reset();
@@ -320,6 +322,7 @@ void msp430_devices_update(unsigned int cycles)
   msp430_sfr_update();
   msp430_svs_update();
   msp430_sysrstiv_update();
+  msp430_sharedreference_update();
   msp430_hwmul_update();
   msp430_digiIO_update();
   msp430_pmm_update();

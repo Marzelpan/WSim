@@ -18,6 +18,7 @@
 #include "msp430_debug.h"
 #include "msp430_sfr.h"
 #include "msp430_sysrstiv.h"
+#include "msp430_shared_reference.h"
 #include "msp430_intr.h"
 #include "msp430_fll_clock.h"
 #include "msp430_basic_clock.h"
