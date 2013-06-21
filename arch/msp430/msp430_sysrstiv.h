@@ -9,13 +9,6 @@
 #ifndef MSP430_SYSRSTIV_H
 #define MSP430_SYSRSTIV_H
 
-#if !defined(SYSRSTIV_BASE)
-#define SYSRSTIV_BASE  0x190
-#endif
-
-#define SYSRSTIV_START SYSRSTIV_BASE
-#define SYSRSTIV_END   (SYSRSTIV_BASE + 0x20)
-
 void msp430_sysrstiv_create();
 void msp430_sysrstiv_reset();
 #define msp430_sysrstiv_update() do { } while (0)
