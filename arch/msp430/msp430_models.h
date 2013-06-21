@@ -605,9 +605,9 @@ typedef struct _infomem_t infomem_t;
 	#define __msp430_have_ucs
 	#define __msp430_have_xt2
 
-	//ucscia ucsib
-	//#define __msp430_have_uscia0
-	//#define __msp430_have_uscib0
+	//uscia uscib
+  #define __msp430_have_uscia0  /* uart/lin + IrDA + SPI */
+  #define __msp430_have_uscib0  /* SPI + I2C             */
 
 	// 8 bit blocks
 	#define __msp430_have_portmap
@@ -617,7 +617,7 @@ typedef struct _infomem_t infomem_t;
 	#define __msp430_have_port4
 	#define __msp430_have_port5 // from gcc4.6+ defines
 	#define __msp430_have_portj
-
+  
 	// 16 bit blocks
 	#define __msp430_have_flash
 	#define __msp430_have_watchdog
@@ -644,7 +644,8 @@ typedef struct _infomem_t infomem_t;
 	#define FLASHCTL_BASE     0x140
 	#define WATCHDOG_BASE     0x15c
 	#define UCS_BASE          0x160
-	#define SYSRSTIV_BASE     0x190
+	#define SYSRSTIV_BASE     0x180
+	#define SHAREDREFERENCE_BASE  0x01B0 
 	#define PORTMAP_BASE      0x1c0
 	#define DIGIIO_BASE       0x200
 	#define TIMER_TA0_BASE    0x340
@@ -657,6 +658,11 @@ typedef struct _infomem_t infomem_t;
   #define ADC12M_BASE       0x700
   #define ADC12MC_BASE      0x700
   
+  #define INTR_USCIX0_RX    23 // Multiple Source Flag (USCIA0 & USCIB0)
+  #define INTR_USCIX0_TX    22 // Multiple Source Flag (USCIA0 & USCIB0)
+  #define INTR_USCIA0_RXTX  58
+  #define INTR_USCIB0_RXTX  57
+
   #define ADC12A_PLUS
 
 	#define DIGIIO_NEW_OFFSETS
