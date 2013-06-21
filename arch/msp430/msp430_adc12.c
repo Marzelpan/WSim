@@ -168,10 +168,9 @@ static int msp430_adc12_init(void)
   for(i=0; i<ADC12_CHANNELS; i++)
     {     
       if (MCU.adc12.channels.channels_valid[i] != ADC_NONE )
-	{
-	  MSP430_TRACER_ADC12INPUT[i] = tracer_event_add_id(16,  trace_names[i],   "msp430");
-	}
-
+      {
+        MSP430_TRACER_ADC12INPUT[i] = tracer_event_add_id(16,  trace_names[i],   "msp430");
+      }
       MCU.adc12.mem[i].s = 0;
     }
 
@@ -367,7 +366,7 @@ void msp430_adc12_update(void)
 	   *   SEL = 1  // Selector  = 0:GPIO  1:peripheral
 	   *   DIR = 0  // Direction = 0:input 1:output
 	   */
-	  MCU.adc12.sample = msp430_adc_sample_input(&MCU.adc12.channels, ADC_CHANNELS, MCU.adc12.current_x);
+	  MCU.adc12.sample = msp430_adc_sample_input(&MCU.adc12.channels, MCU.adc12.mctl[MCU.adc12.current_x].b.inch, MCU.adc12.current_x);
 	  ADC12_TRACER_INPUT( MCU.adc12.mctl[MCU.adc12.current_x].b.inch, MCU.adc12.sample );
 
 	  HW_DMSG_ADC12("msp430:adc12:     sampling on config %d hw_channel %d (%s) = 0x%04x [%"PRId64"]\n",
