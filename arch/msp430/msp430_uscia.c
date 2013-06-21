@@ -98,6 +98,7 @@ UART mode features include:
 void msp430_uscia0_create()
 {
   msp430_io_register_range8(USCIA0_START,USCIA0_END,msp430_uscia0_read,msp430_uscia0_write);
+  msp430_io_register_range16(USCIA0_START,USCIA0_END,msp430_uscia0_read,msp430_uscia0_write);
 }
 
 /* ************************************************** */

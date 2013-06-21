@@ -218,20 +218,20 @@ struct msp430_uscia_t
 /* ************************************************** */
 
 #if defined(__msp430_have_uscia0)
-#define USCIA0_START  USCIA_BASE
-#define USCIA0_END    USCIA_BASE+10
+#define USCIA0_START  USCIA_BASE // 0x05C0
+#define USCIA0_END    USCIA_BASE+0x013
 
-#define UCA0ABCTL     USCIA_BASE
-#define UCA0IRTCTL    USCIA_BASE+1
-#define UCA0IRRCTL    USCIA_BASE+2
-#define UCA0CTL0      USCIA_BASE+3
-#define UCA0CTL1      USCIA_BASE+4
-#define UCA0BR0       USCIA_BASE+5
-#define UCA0BR1       USCIA_BASE+6
-#define UCA0MCTL      USCIA_BASE+7
-#define UCA0STAT      USCIA_BASE+8
-#define UCA0RXBUF     USCIA_BASE+9
-#define UCA0TXBUF     USCIA_BASE+10
+#define UCA0CTL0      USCIA_BASE+0x000 /* USCI A0 Control Register 0 */
+#define UCA0CTL1      USCIA_BASE+0x001 /* USCI A0 Control Register 1 */
+#define UCA0BR0       USCIA_BASE+0x006 /* USCI A0 Baud Rate 0 0x05C6 */
+#define UCA0BR1       USCIA_BASE+0x007 /* USCI A0 Baud Rate 1 */
+#define UCA0MCTL      USCIA_BASE+0x008 /* USCI A0 Modulation Control 0x05C8 */
+#define UCA0STAT      USCIA_BASE+0x00A /* USCI A0 Status Register 0x05CA */
+#define UCA0RXBUF     USCIA_BASE+0x00C /* USCI A0 Receive Buffer */
+#define UCA0TXBUF     USCIA_BASE+0x00E /* USCI A0 Transmit Buffer */
+#define UCA0ABCTL     USCIA_BASE+0x010 /* USCI A0 LIN Control */
+#define UCA0IRTCTL    USCIA_BASE+0x012 /* USCI A0 IrDA Transmit Control */
+#define UCA0IRRCTL    USCIA_BASE+0x013 /* USCI A0 IrDA Receive Control */
 
 
 void   msp430_uscia0_create();
