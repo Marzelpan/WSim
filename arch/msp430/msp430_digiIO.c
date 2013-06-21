@@ -404,8 +404,6 @@ void msp430_digiIO_create()
   msp430_io_register_range8(PJIN, PJREN,msp430_digiIO_mcu_read,msp430_digiIO_mcu_write);
   msp430_io_register_range16(PJIN, PJREN,msp430_digiIO_mcu_read,msp430_digiIO_mcu_write);
   #endif
-  printf("0x%04x-0x%04x 1\n", PJIN,PJREN);
-  printf("0x%04x-0x%04x 2\n", DIGIIO_START,DIGIIO_END);
   msp430_io_register_range8(DIGIIO_START, DIGIIO_END,msp430_digiIO_mcu_read,msp430_digiIO_mcu_write);
 
   IFPORT1 ( MSP430_TRACER_PORT1    = tracer_event_add_id(8,  "port1_out",  "msp430"); );
