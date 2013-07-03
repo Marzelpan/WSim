@@ -572,9 +572,15 @@ AM_CONDITIONAL([BUILD_CYGWIN],  [test "$HOSTTYPE" = "Cygwin"])
 if  test "${gui_sum}" = "yes" ; then
    AC_DEFINE([GUI_X11], [1], [Defines wether a X11 GUI is available])
    AC_DEFINE([GUI_QT4], [1], [Defines wether a X11 GUI is available])
-   QT4DIR="/usr"
-   CPPFLAGS="$CPPFLAGS -I$QT4DIR/include/qt4 -I$QT4DIR/include/qt4/QtCore -I$QT4DIR/include/qt4/QtGui"
-   EXTRALIBS="$EXTRALIBS -lX11 -lQtGui -lQtCore -L$QT4DIR/lib"
+   PKG_CHECK_MODULES([QT4], [QtCore >= 4.6 QtGui >= 4.6])
+   CPPFLAGS="$CPPFLAGS $QT4_CFLAGS $QT4_CPPFLAGS" 
+   EXTRALIBS="$EXTRALIBS $QT4_LIBS" #-lX11
+   test -x "$QTMOC" || QTMOC=$(pkg-config --variable moc_location QtCore)
+   test -x "$QTUIC" || QTUIC=$(pkg-config --variable uic_location QtCore)
+   test -x "$QTRCC" || QTRCC=${QTMOC%*/*}/rcc
+   AC_SUBST(QTMOC)
+   AC_SUBST(QTUIC)
+   AC_SUBST(QTRCC)
    gui_type="Qt4"
 else
    AC_DEFINE([GUI_NONE], [1], [Defines wether No-GUI is selected])

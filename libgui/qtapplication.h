@@ -22,7 +22,7 @@
 #include <QMutexLocker>
 #include <QTime>
 
-#include "ui_defines.h"
+#include "gui_defines.h"
 
 /**
   * We use Qt here in a non common way without the moc precompiler.

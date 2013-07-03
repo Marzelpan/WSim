@@ -24,18 +24,6 @@
 #include "src/options.h"
 #include "src/revision.h"
 
-
-/*
- * we must include SDL.h to define the SDL_main symbol in the main.c source file
- * This is needed at least for MacOSX builds
- */
-
-#if defined(GUI_SDL)
-#include "SDL.h"
-#endif
-
-/* this needs to appear after SDL.h */
-
 #if defined(FUNC_GETRUSAGE_DEFINED)
 #include <sys/resource.h>
 #endif

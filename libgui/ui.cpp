@@ -10,8 +10,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "qtapplication.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -24,14 +22,9 @@ extern "C" {
 #endif
 
 #include "ui.h"
-// TODO: we are using pthread here, this may not be available on all supported plattforms
-#include <pthread.h>
+#include "mainwindow.h"
 
 #define UNUSED __attribute__((unused))  
-
-extern "C" {
-#include "src/mainworker.h"
-}
 
 /**
  * global variables
@@ -83,7 +76,7 @@ int ui_create(int w, int h, int id)
     }
 
 
-  app->setWindowData(w, h, name, GUI_DATA_MACHINE.framebuffer_size);
+  simulationWorker->setWindowData(w, h, name, GUI_DATA_MACHINE.framebuffer_size);
   GUI_DATA_MACHINE.b_up   = 0;
   GUI_DATA_MACHINE.b_down = 0;
   return UI_OK;
@@ -91,7 +84,6 @@ int ui_create(int w, int h, int id)
 
 void ui_delete(void)
 {
-   app->close();
 }
 
 int ui_refresh(int modified)
@@ -101,20 +93,20 @@ int ui_refresh(int modified)
 
   if (modified)
     {
-		app->copyBitmap(GUI_DATA_MACHINE.framebuffer);
+		simulationWorker->copyBitmap(GUI_DATA_MACHINE.framebuffer);
     }
   return UI_OK;
 }
 
 int ui_getevent(void)
 {
-	if (!app->buttonDown && !app->buttonUp)
+	if (!simulationWorker->buttonDown && !simulationWorker->buttonUp)
 	  return UI_EVENT_NONE;
 	else {
-		GUI_DATA_MACHINE.b_up = app->buttonUp;
-		GUI_DATA_MACHINE.b_down = app->buttonDown;
-		app->buttonUp = 0;
-		app->buttonDown = 0;
+		GUI_DATA_MACHINE.b_up = simulationWorker->buttonUp;
+		GUI_DATA_MACHINE.b_down = simulationWorker->buttonDown;
+		simulationWorker->buttonUp = 0;
+		simulationWorker->buttonDown = 0;
 		return UI_EVENT_USER;
 	}
 }
@@ -126,11 +118,6 @@ void ui_default_input (const char *name)
     {
     case UI_EVENT_USER:
       DMSG_LIB_UI("%s: UI event %04x %04x\n", name, machine.ui.b_up,machine.ui.b_down);
-      break;
-
-    case UI_EVENT_QUIT:
-      DMSG_LIB_UI("%s: UI event QUIT\n",name);
-      mcu_signal_add(SIG_HOST | SIGTERM);
       break;
 
     case UI_EVENT_NONE:

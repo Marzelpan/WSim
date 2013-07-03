@@ -137,6 +137,22 @@ int system_create(int dev_num)
     machine.device[dev_num].state_size = sizeof (struct ez430chronos_struct_t);
     machine.device[dev_num].name = "System Platform";
 
+    uint8_t index=0;
+    machine.ui.buttons[index].pin = UI_BUTTON_3;
+    strncpy(machine.ui.buttons[index++].name, "Arrow up", 255);
+
+    machine.ui.buttons[index].pin = UI_BUTTON_5;
+    strncpy(machine.ui.buttons[index++].name, "Arrow down", 255);
+
+    machine.ui.buttons[index].pin = UI_BUTTON_4;
+    strncpy(machine.ui.buttons[index++].name, "Light", 255);
+    
+    machine.ui.buttons[index].pin = UI_BUTTON_1;
+    strncpy(machine.ui.buttons[index++].name, "*", 255);
+    
+    machine.ui.buttons[index].pin = UI_BUTTON_2;
+    strncpy(machine.ui.buttons[index++].name, "#", 255);
+    
 //     STDOUT("%s: ========= SuS WSim =========\n", NAME);
 //     STDOUT("%s: '*' = '1'\n", NAME);
 //     STDOUT("%s: '#' = '2'\n", NAME);
