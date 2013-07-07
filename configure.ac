@@ -17,6 +17,7 @@ dnl --------------------------------------------------------------
 AC_PROG_INSTALL
 AC_PROG_CC
 AM_PROG_CC_C_O
+AC_PROG_CXX
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 
@@ -571,10 +572,10 @@ AM_CONDITIONAL([BUILD_CYGWIN],  [test "$HOSTTYPE" = "Cygwin"])
 
 if  test "${gui_sum}" = "yes" ; then
    AC_DEFINE([GUI_X11], [1], [Defines wether a X11 GUI is available])
-   AC_DEFINE([GUI_QT4], [1], [Defines wether a X11 GUI is available])
+   AC_DEFINE([GUI_QT4], [1], [Defines wether a QT4 GUI is available])
    PKG_CHECK_MODULES([QT4], [QtCore >= 4.6 QtGui >= 4.6])
    CPPFLAGS="$CPPFLAGS $QT4_CFLAGS $QT4_CPPFLAGS" 
-   EXTRALIBS="$EXTRALIBS $QT4_LIBS" #-lX11
+   EXTRALIBS="$EXTRALIBS $QT4_LIBS -lstdc++" #-lX11
    test -x "$QTMOC" || QTMOC=$(pkg-config --variable moc_location QtCore)
    test -x "$QTUIC" || QTUIC=$(pkg-config --variable uic_location QtCore)
    test -x "$QTRCC" || QTRCC=${QTMOC%*/*}/rcc
