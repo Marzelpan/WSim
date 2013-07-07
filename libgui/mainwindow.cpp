@@ -1,17 +1,13 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include <QDebug>
-
-#ifdef __cplusplus
 extern "C" {
-#endif
 #include "arch/common/hardware.h"
-#include "devices/devices.h"
-#include "src/mgetopt.h"
-#include "src/options.h"
-#ifdef __cplusplus
+// #include "devices/devices.h"
+// #include "src/mgetopt.h"
+// #include "src/options.h"
+// #include "src/mainworker.h"
 }
-#endif
+
+#include "config.h"
+#include "gui_defines.h"
 
 /**
   * Global variables: The commandline arguments have to be global
@@ -19,16 +15,17 @@ extern "C" {
   */
 int _argc;
 char** _argv;
-Worker* simulationWorker;
 
-extern "C" {
-#include "src/mainworker.h"
-}
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include <QDebug>
+
+Worker* simulationWorker;
 
 void Worker::runSimulation()
 {
   framebufferData = 0;
-  startWorker(_argc, _argv);
+//   startWorker(_argc, _argv);
   emit finished();
 }
 

@@ -10,17 +10,14 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 #include "arch/common/hardware.h"
 #include "devices/devices.h"
 #include "src/mgetopt.h"
 #include "src/options.h"
-#ifdef __cplusplus
 }
-#endif
 
+#include "config.h"
 #include "ui.h"
 #include "mainwindow.h"
 
@@ -37,14 +34,14 @@ static struct moption_t gui_opt = {
   no_argument,
   "enable GUI",
   0,
-  0
+  ""
 };
 
 static struct moption_t title_opt = {
   "ui_title",
   required_argument,
   "GUI window title",
-  0, 0
+  0, ""
 };
 
 int ui_options_add(void)

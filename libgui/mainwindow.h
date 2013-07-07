@@ -17,7 +17,6 @@
 
 #include <inttypes.h>
 
-#include "gui_defines.h"
 /**
   * Global variables: The commandline arguments have to be global
   * to be accessable from both threads (gui and simulation).

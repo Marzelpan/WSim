@@ -4,7 +4,7 @@ noinst_LIBRARIES=libgui.a
 INCLUDES=-I$(top_srcdir)
 
 libgui_a_CFLAGS=
-libgui_a_SOURCES=ui.h ui.cpp qt_main.cpp mainwindow.cpp moc_mainwindow.cpp
+libgui_a_SOURCES=ui.h ui.cpp qt_main.cpp mainwindow.cpp mainwindow.h moc_mainwindow.cpp
 
 # MOC: Moc class
 moc_mainwindow.cpp: mainwindow.h
@@ -15,5 +15,5 @@ mainwindow.cpp: ui_mainwindow.h
 ui_mainwindow.h: mainwindow.ui
 	$(QTUIC) -n $< -o ui_mainwindow.h
 
-clean: 
-	-rm -f ui_mainwindow.h moc_qt_main.cpp
+clean:
+	-rm -f ui_mainwindow.h moc_mainwindow.cpp *.o
