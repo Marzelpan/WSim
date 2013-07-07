@@ -10,6 +10,7 @@
 #ifndef HW_GUI_H
 #define HW_GUI_H
 
+#include <inttypes.h>
 #include "gui_defines.h"
 struct ui_t
 {
@@ -56,6 +57,8 @@ struct ui_t
   #ifdef __cplusplus
   extern "C" {
   #endif
+
+	  struct ui_t* get_machine_ui();
 
 	#if defined(GUI)
 

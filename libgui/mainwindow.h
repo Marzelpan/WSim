@@ -1,19 +1,18 @@
+
+/**
+ *  \file   mainwindow.h
+ *  \brief  WorldSens Simulator UI Definition
+ *  \author David Gräff
+ *  \date   2013
+ **/
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
 #include <QThread>
 #include <QImage>
-
 #include <QPushButton>
-#include <QEvent>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QDebug>
-#include <QQueue>
-#include <QMutex>
-#include <QMutexLocker>
-#include <QTime>
 
 #include <inttypes.h>
 
@@ -44,11 +43,13 @@ public:
   void copyBitmap(uint8_t* data);
 public Q_SLOTS:
     void runSimulation();
+	void stopSimulation();
     void setButtonUp(uint32_t);
     void setButtonDown(uint32_t);
 public:
     uint32_t buttonUp;
     uint32_t buttonDown;
+	bool shutdown;
     int memsize;
 private:
     uint8_t* framebufferData;
@@ -111,6 +112,7 @@ private Q_SLOTS:
     void btnreleased();
 Q_SIGNALS:
     void startSimulation();
+	void stopSimulation();
     void setButtonUp(uint32_t);
     void setButtonDown(uint32_t);
 };

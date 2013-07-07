@@ -1,11 +1,6 @@
-extern "C" {
-#include "arch/common/hardware.h"
-// #include "devices/devices.h"
-// #include "src/mgetopt.h"
-// #include "src/options.h"
-// #include "src/mainworker.h"
-}
-
+// #include "arch/common/hardware.h"
+#include "src/mainworker.h"
+#include "ui.h"
 #include "config.h"
 #include "gui_defines.h"
 
@@ -19,14 +14,29 @@ char** _argv;
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
+#include <QEvent>
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QDebug>
+#include <QQueue>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QTime>
 
 Worker* simulationWorker;
 
 void Worker::runSimulation()
 {
+  shutdown = false;
   framebufferData = 0;
-//   startWorker(_argc, _argv);
+  startWorker(_argc, _argv);
+  shutdown = false;
   emit finished();
+}
+
+void Worker::stopSimulation()
+{
+  shutdown = true;
 }
 
 void Worker::setWindowData(int w, int h, const char* title, int memsize)
@@ -61,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     worker.moveToThread(&workerThread);
     connect(this, SIGNAL(startSimulation()), &worker, SLOT(runSimulation()));
+    connect(this, SIGNAL(stopSimulation()), &worker, SLOT(stopSimulation()));
     connect(this, SIGNAL(setButtonUp(uint32_t)), &worker, SLOT(setButtonUp(uint32_t)));
     connect(this, SIGNAL(setButtonDown(uint32_t)), &worker, SLOT(setButtonDown(uint32_t)));
     connect(&worker, SIGNAL(finished()), this, SLOT(finishedSimulation()));
@@ -100,7 +111,7 @@ void MainWindow::on_action_Re_Start_triggered()
 
 void MainWindow::on_actionStop_triggered()
 {
-  mcu_signal_add(SIG_HOST | SIGTERM);
+	emit stopSimulation();
 }
 
 void MainWindow::finishedSimulation()
@@ -155,9 +166,12 @@ void MainWindow::setGuiSimData(const QString& title, int w, int h, int memsize)
   // Add buttons
   QToolBar *bar = ui->mainToolBar;
   
+  struct ui_t* machine_ui = get_machine_ui();
   for (int i=0;i<8;++i) {
-    QString title = QString::fromUtf8(machine.ui.buttons[i].name);
-    wsimButton* btn = new wsimButton(title, machine.ui.buttons[i].pin, this);
+    QString title = QString::fromUtf8(machine_ui->buttons[i].name);
+	if (title.isEmpty())
+		continue;
+    wsimButton* btn = new wsimButton(title, machine_ui->buttons[i].pin, this);
     connect(btn, SIGNAL(pressed()), SLOT(btnpressed()));
     connect(btn, SIGNAL(released()), SLOT(btnreleased()));
     bar->addWidget(btn);

@@ -10,14 +10,11 @@
 #include <stdio.h>
 #include <string.h>
 
-extern "C" {
 #include "arch/common/hardware.h"
-#include "devices/devices.h"
-#include "src/mgetopt.h"
+extern "C" {
 #include "src/options.h"
 }
 
-#include "config.h"
 #include "ui.h"
 #include "mainwindow.h"
 
@@ -28,6 +25,11 @@ extern "C" {
  **/
 
 #define GUI_DATA_MACHINE   machine.ui
+
+struct ui_t* get_machine_ui()
+{
+	return &GUI_DATA_MACHINE;
+}
 
 static struct moption_t gui_opt = {
   "ui",
@@ -105,6 +107,9 @@ int ui_getevent(void)
 		simulationWorker->buttonUp = 0;
 		simulationWorker->buttonDown = 0;
 		return UI_EVENT_USER;
+	}
+	if (simulationWorker->shutdown) {
+		   mcu_signal_add(SIG_HOST | SIGTERM);
 	}
 }
 
