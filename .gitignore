@@ -18,6 +18,7 @@ stamp-h1
 # GUI/Qt intermediate files
 libgui/moc_mainwindow.cpp
 libgui/ui_mainwindow.h
+libgui/libgui.pro.user
 
 # Automake
 /aclocal.m4
