@@ -124,8 +124,6 @@ int8_t msp430_lcdb_read8(uint16_t addr)
 
 void msp430_lcdb_write(uint16_t addr, int16_t val)
 {
-	int i;
-	
 	switch(addr) {
 		case LCDB_LCDBCTL0:
 			MCU.lcdb.lcdbctl0.s = val;

@@ -402,7 +402,7 @@ void msp430_digiIO_create()
 {
   #if defined(__msp430_have_portj)
   msp430_io_register_range8(PJIN, PJREN,msp430_digiIO_mcu_read,msp430_digiIO_mcu_write);
-  msp430_io_register_range16(PJIN, PJREN,msp430_digiIO_mcu_read,msp430_digiIO_mcu_write);
+  msp430_io_register_range16(PJIN, PJREN,msp430_digiIO_mcu_read16,msp430_digiIO_mcu_write16);
   #endif
   msp430_io_register_range8(DIGIIO_START, DIGIIO_END,msp430_digiIO_mcu_read,msp430_digiIO_mcu_write);
 
@@ -437,6 +437,10 @@ void msp430_digiIO_reset()
 /* ************************************************** */
 /* * ACCESS OPERATIONS FOR MCU ********************** */
 /* ************************************************** */
+int16_t msp430_digiIO_mcu_read16 (uint16_t addr)
+{
+	return msp430_digiIO_mcu_read(addr);
+}
 
 int8_t msp430_digiIO_mcu_read (uint16_t addr)
 {
@@ -538,6 +542,10 @@ int8_t msp430_digiIO_mcu_read (uint16_t addr)
 /* ************************************************** */
 /* ************************************************** */
 /* ************************************************** */
+void msp430_digiIO_mcu_write16(uint16_t addr, int16_t val)
+{
+	msp430_digiIO_mcu_write(addr, val);
+}
 
 void msp430_digiIO_mcu_write(uint16_t addr, int8_t val)
 {

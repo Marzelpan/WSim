@@ -238,7 +238,9 @@ void   msp430_uscia0_create();
 void   msp430_uscia0_reset();
 void   msp430_uscia0_update();
 int8_t msp430_uscia0_read (uint16_t addr);
+int16_t msp430_uscia0_read16 (uint16_t addr);
 void   msp430_uscia0_write(uint16_t addr, int8_t val);
+void   msp430_uscia0_write16(uint16_t addr, int16_t val);
 int    msp430_uscia0_chkifg();
 
 

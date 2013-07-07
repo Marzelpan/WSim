@@ -8,4 +8,15 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*
+ * Start simulation main loop.
+ */
 int startWorker(int argc, char* argv[]);
+
+#ifdef __cplusplus
+}
+#endif

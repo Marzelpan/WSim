@@ -412,12 +412,12 @@ int m25p_device_create(int dev, int UNUSED id)
   machine.device[dev].state_size    = m25p_device_size();
   machine.device[dev].name          = M25PNAME " flash memory";
 
-  M25P_INIT = flash_init_opt.value;
+  M25P_INIT = (char*)flash_init_opt.value;
   if (flash_dump_opt.value)
     {
       OUTPUT("wsim:m25p80: will dump flash in %s\n",flash_dump_opt.value);
     }
-  M25P_DUMP = flash_dump_opt.value;
+  M25P_DUMP = (char*)flash_dump_opt.value;
 
 #if DEBUG_ME_HARDER != 0
   HW_DMSG_M25(M25PNAME ": =================================== \n");

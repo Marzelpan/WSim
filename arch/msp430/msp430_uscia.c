@@ -98,7 +98,7 @@ UART mode features include:
 void msp430_uscia0_create()
 {
   msp430_io_register_range8(USCIA0_START,USCIA0_END,msp430_uscia0_read,msp430_uscia0_write);
-  msp430_io_register_range16(USCIA0_START,USCIA0_END,msp430_uscia0_read,msp430_uscia0_write);
+  msp430_io_register_range16(USCIA0_START,USCIA0_END,msp430_uscia0_read16,msp430_uscia0_write16);
 }
 
 /* ************************************************** */
@@ -270,6 +270,11 @@ void msp430_uscia0_update()
 }
 
 /* uscia0 read from MCU */
+int16_t msp430_uscia0_read16(uint16_t addr)
+{
+	return msp430_uscia0_read(addr);
+}
+
 int8_t msp430_uscia0_read(uint16_t addr)
 {
   int8_t res;                                                                 
@@ -333,6 +338,11 @@ int8_t msp430_uscia0_read(uint16_t addr)
 }
 
 /* uscia0 write from MCU */
+void   msp430_uscia0_write16(uint16_t addr, int16_t val)
+{
+	msp430_uscia0_write(addr, val);
+}
+
 void msp430_uscia0_write(uint16_t UNUSED addr, int8_t UNUSED val)
 {
   switch (addr)                                                               

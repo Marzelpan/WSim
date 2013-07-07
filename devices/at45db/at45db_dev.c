@@ -542,8 +542,8 @@ int at45db_device_create(int dev, int UNUSED id)
   machine.device[dev].state_size    = at45db_device_size();
   machine.device[dev].name          = "at45db flash memory";
 
-  AT45_INIT = flash_init_opt.value;
-  AT45_DUMP = flash_dump_opt.value;
+  AT45_INIT = (char*)flash_init_opt.value;
+  AT45_DUMP = (char*)flash_dump_opt.value;
   
   if (AT45_INIT == NULL || at45db_flash_load(dev, AT45_INIT))
     {
