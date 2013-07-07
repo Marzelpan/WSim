@@ -15,6 +15,10 @@
 config.h
 stamp-h1
 
+# GUI/Qt intermediate files
+libgui/moc_mainwindow.cpp
+libgui/ui_mainwindow.h
+
 # Automake
 /aclocal.m4
 /autom4te.cache
