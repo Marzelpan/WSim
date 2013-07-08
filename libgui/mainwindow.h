@@ -29,6 +29,8 @@ namespace Ui {
 }
 
 class QTimerEvent;
+class QCloseEvent;
+#include <QMutex>
 class Worker : public QObject
 {
     Q_OBJECT
@@ -40,19 +42,21 @@ public:
   // slow down to 50ms update time, we do no
   // draw the pixmap immediatelly here, but notify
   // the Qt event system of new pixmap data
-  void copyBitmap(uint8_t* data);
-public Q_SLOTS:
-    void runSimulation();
+	void copyBitmap(uint8_t* data);
 	void stopSimulation();
     void setButtonUp(uint32_t);
     void setButtonDown(uint32_t);
+	void getButtonState(uint32_t&,uint32_t&,bool&);
+public Q_SLOTS:
+    void runSimulation();
 public:
-    uint32_t buttonUp;
-    uint32_t buttonDown;
-	bool shutdown;
     int memsize;
 private:
     uint8_t* framebufferData;
+	QMutex mMutex;
+    uint32_t buttonUp;
+    uint32_t buttonDown;
+	bool shutdown;
 Q_SIGNALS:
     void finished();
     void setGuiSimData(const QString& title, int w, int h, int memsize);
@@ -67,6 +71,7 @@ public:
 
 protected:
     void changeEvent(QEvent *e);
+	void closeEvent(QCloseEvent* e);
   /**
     * Override QApplication timerEvent. Called
     * by the Qt event system after setup with startTimer(ms).
@@ -86,8 +91,8 @@ private:
     QString title;
     int memsize;
     // gui to core thread
-    uint32_t buttonUp;
-    uint32_t buttonDown;
+    int buttonUp;
+    int buttonDown;
     uint8_t* framebufferData;
     
   class wsimButton : public QPushButton {
@@ -112,9 +117,6 @@ private Q_SLOTS:
     void btnreleased();
 Q_SIGNALS:
     void startSimulation();
-	void stopSimulation();
-    void setButtonUp(uint32_t);
-    void setButtonDown(uint32_t);
 };
 
 

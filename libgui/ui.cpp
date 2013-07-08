@@ -14,6 +14,7 @@
 extern "C" {
 #include "src/options.h"
 }
+#include "src/mainworker.h"
 
 #include "ui.h"
 #include "mainwindow.h"
@@ -99,17 +100,20 @@ int ui_refresh(int modified)
 
 int ui_getevent(void)
 {
-	if (!simulationWorker->buttonDown && !simulationWorker->buttonUp)
+    uint32_t buttonUp;
+    uint32_t buttonDown;
+	bool shutdown;
+	simulationWorker->getButtonState(buttonUp, buttonDown, shutdown);
+	if (shutdown) {
+		main_end(WSIM_END_NORMAL);
+		return UI_EVENT_NONE;
+	}
+	if (!buttonDown && !buttonUp)
 	  return UI_EVENT_NONE;
 	else {
-		GUI_DATA_MACHINE.b_up = simulationWorker->buttonUp;
-		GUI_DATA_MACHINE.b_down = simulationWorker->buttonDown;
-		simulationWorker->buttonUp = 0;
-		simulationWorker->buttonDown = 0;
+		GUI_DATA_MACHINE.b_up = buttonUp;
+		GUI_DATA_MACHINE.b_down = buttonDown;
 		return UI_EVENT_USER;
-	}
-	if (simulationWorker->shutdown) {
-		   mcu_signal_add(SIG_HOST | SIGTERM);
 	}
 }
 

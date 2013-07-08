@@ -13,13 +13,13 @@ char** _argv;
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QCloseEvent>
 #include <QDebug>
 #include <QEvent>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QDebug>
 #include <QQueue>
-#include <QMutex>
 #include <QMutexLocker>
 #include <QTime>
 
@@ -29,13 +29,16 @@ void Worker::runSimulation()
 {
   shutdown = false;
   framebufferData = 0;
+  qDebug() << "start sim";
   startWorker(_argc, _argv);
+  qDebug() << "stop sim";
   shutdown = false;
   emit finished();
 }
 
 void Worker::stopSimulation()
 {
+	QMutexLocker l(&mMutex);
   shutdown = true;
 }
 
@@ -56,35 +59,57 @@ void Worker::copyBitmap(uint8_t* data)
  
 void Worker::setButtonUp(uint32_t b)
 {
+	QMutexLocker l(&mMutex);
   buttonUp = b;
 }
 
 void Worker::setButtonDown(uint32_t b)
 {
+	QMutexLocker l(&mMutex);
   buttonDown = b;
+}
+
+void Worker::getButtonState(uint32_t& up,uint32_t& down,bool& shutdown)
+{
+	QMutexLocker l(&mMutex);
+	up = buttonUp;
+	down = buttonDown;
+	shutdown = this->shutdown;
+	
+	buttonUp = 0;
+	buttonDown = 0;
 }
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow), currentTimerID(0)
 {
     ui->setupUi(this);
+	ui->actionStop->setEnabled(false);
     worker.moveToThread(&workerThread);
-    connect(this, SIGNAL(startSimulation()), &worker, SLOT(runSimulation()));
-    connect(this, SIGNAL(stopSimulation()), &worker, SLOT(stopSimulation()));
-    connect(this, SIGNAL(setButtonUp(uint32_t)), &worker, SLOT(setButtonUp(uint32_t)));
-    connect(this, SIGNAL(setButtonDown(uint32_t)), &worker, SLOT(setButtonDown(uint32_t)));
-    connect(&worker, SIGNAL(finished()), this, SLOT(finishedSimulation()));
-    connect(&worker, SIGNAL(setGuiSimData(const QString&, int, int, int)), this, SLOT(setGuiSimData(const QString&, int, int, int)));
-    connect(&worker, SIGNAL(displayBitmap(uint8_t*)), this, SLOT(displayBitmap(uint8_t*)));
+    connect(this, SIGNAL(startSimulation()), &worker, SLOT(runSimulation()),Qt::QueuedConnection);
+    connect(&worker, SIGNAL(finished()), this, SLOT(finishedSimulation()),Qt::QueuedConnection);
+    connect(&worker, SIGNAL(setGuiSimData(const QString&, int, int, int)), this, SLOT(setGuiSimData(const QString&, int, int, int)),Qt::QueuedConnection);
+    connect(&worker, SIGNAL(displayBitmap(uint8_t*)), this, SLOT(displayBitmap(uint8_t*)),Qt::QueuedConnection);
     // set global object simulationWorker. This is used by the simulation c code
     // to communicate with the gui main thread
     simulationWorker = &worker;
+	
+	on_action_Re_Start_triggered();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent* e)
+{
+	worker.stopSimulation();
+	workerThread.wait(2000);
+	if (workerThread.isRunning()) {
+		qWarning() << "Could not finish simulation thread!";
+	}
 }
 
 void MainWindow::changeEvent(QEvent *e)
@@ -106,17 +131,20 @@ void MainWindow::on_actionQuit_triggered()
 
 void MainWindow::on_action_Re_Start_triggered()
 {
+	ui->actionStop->setEnabled(true);
+	ui->action_Re_Start->setEnabled(false);
+	workerThread.start();
     emit startSimulation();
 }
 
 void MainWindow::on_actionStop_triggered()
 {
-	emit stopSimulation();
+	worker.stopSimulation();
 }
 
 void MainWindow::finishedSimulation()
 {
-  qDebug() << "Emulator beendet!";
+//   qDebug() << "Emulator beendet!";
   ui->action_Re_Start->setEnabled(true);
   ui->actionStop->setEnabled(false);
 }
@@ -136,12 +164,20 @@ void MainWindow::timerEvent ( QTimerEvent * event ) {
   // start the timer.
   killTimer(currentTimerID);
   currentTimerID = 0;
-  displayBitmap(framebufferData);
+  displayBitmap(0);
 }
   
 void MainWindow::displayBitmap(uint8_t* data)
 {
-    framebufferData = data;
+	if (data != 0) {
+		framebufferData = data;
+		// if the gui pixmap update timer is already running, do nothing
+		if (currentTimerID)
+            return;
+		// New data is available: Start the timer and also show the
+		// new pixmap immediatelly.
+		currentTimerID = startTimer(50);
+	}
     for(int y=0; y < h; y++) {
       int idx_buff =  y * w * 3;
       for(int x=0; x < w; x++)
@@ -187,12 +223,12 @@ void MainWindow::btnpressed()
 {
   wsimButton* btn = (wsimButton*)sender();
   buttonDown |= btn->buttoncode;
-  emit setButtonDown(buttonDown);
+  worker.setButtonDown(buttonDown);
 }
 
 void MainWindow::btnreleased()
 {
   wsimButton* btn = (wsimButton*)sender();
   buttonUp |= btn->buttoncode;
-  emit setButtonUp(buttonUp);
+  worker.setButtonUp(buttonUp);
 }

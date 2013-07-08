@@ -24,6 +24,8 @@
 #include "src/options.h"
 #include "src/revision.h"
 
+#include "mainworker.h"
+
 #if defined(FUNC_GETRUSAGE_DEFINED)
 #include <sys/resource.h>
 #endif
@@ -31,12 +33,6 @@
 /* ************************************************** */
 /* ************************************************** */
 /* ************************************************** */
-
-enum wsim_end_mode_t {
-  WSIM_END_NORMAL,
-  WSIM_END_SIGNAL,
-  WSIM_END_ERROR
-};
 
 char* wsim_end_mode_str(enum wsim_end_mode_t mode)
 {
@@ -51,7 +47,6 @@ char* wsim_end_mode_str(enum wsim_end_mode_t mode)
 }
 
 static struct options_t o;
-static void main_end(enum wsim_end_mode_t mode);
 
 /* ************************************************** */
 /* ************************************************** */
@@ -62,6 +57,7 @@ void signal_quit(int signum)
   INFO("\nwsim: received Unix signal %d (%s)\n",signum,host_signal_str(signum));
   mcu_signal_add(SIG_HOST | signum);
   main_end(WSIM_END_SIGNAL);
+  exit( EXIT_SUCCESS );
 }
 
 /* ************************************************** */
@@ -167,7 +163,7 @@ void app_exit_error()
 /* ************************************************** */
 /* ************************************************** */
 
-static void main_end(enum wsim_end_mode_t mode)
+void main_end(enum wsim_end_mode_t mode)
 {
   OUTPUT("================\n");
   OUTPUT("== wsim stop  ==\n");
@@ -204,7 +200,6 @@ static void main_end(enum wsim_end_mode_t mode)
   logger_close();
   logpkt_close();
   ui_delete();
-  exit( EXIT_SUCCESS );
 }
 
 /* ************************************************** */
