@@ -22,6 +22,6 @@
  **/
 int main(int argc, char* argv[])
 {
-  return startWorker(argc, agrv);
+  return simulationMain(argc, agrv);
 }
 

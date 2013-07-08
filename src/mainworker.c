@@ -33,6 +33,13 @@
 /* ************************************************** */
 /* ************************************************** */
 /* ************************************************** */
+enum wsim_end_mode_t {
+  WSIM_END_NORMAL,
+  WSIM_END_SIGNAL,
+  WSIM_END_ERROR
+};
+
+static void main_end(enum wsim_end_mode_t mode);
 
 char* wsim_end_mode_str(enum wsim_end_mode_t mode)
 {
@@ -214,7 +221,7 @@ void main_end(enum wsim_end_mode_t mode)
 /**
  * main : program entry point
  **/
-int startWorker(int argc, char* argv[])
+int simulationMain(int argc, char* argv[])
 {
 
 #ifdef _WIN32

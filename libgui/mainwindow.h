@@ -10,60 +10,17 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QThread>
 #include <QImage>
 #include <QPushButton>
 #include <QList>
 
 #include <inttypes.h>
 
-/**
-  * Global variables: The commandline arguments have to be global
-  * to be accessable from both threads (gui and simulation).
-  */
-extern int _argc;
-extern char** _argv;
-
-
 namespace Ui {
     class MainWindow;
 }
-
-class QTimerEvent;
-class QCloseEvent;
-#include <QMutex>
-class Worker : public QObject
-{
-    Q_OBJECT
-public:
-  // core to gui thread communication
-  void setWindowData(int w, int h, const char* title, int memsize);
-  
-  // core to gui thread communication
-  // slow down to 50ms update time, we do no
-  // draw the pixmap immediatelly here, but notify
-  // the Qt event system of new pixmap data
-	void copyBitmap(uint8_t* data);
-	void stopSimulation();
-    void setButtonUp(uint32_t);
-    void setButtonDown(uint32_t);
-	void getButtonState(uint32_t&,uint32_t&,bool&);
-public Q_SLOTS:
-    void runSimulation();
-public:
-    int memsize;
-private:
-    uint8_t* framebufferData;
-	QMutex mMutex;
-    uint32_t buttonUp;
-    uint32_t buttonDown;
-	bool shutdown;
-Q_SIGNALS:
-    void finished();
-    void setGuiSimData(const QString& title, int w, int h, int memsize);
-    void displayBitmap(uint8_t* data);
-};
  
+class SimulationThread;
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
@@ -83,8 +40,8 @@ protected:
 private:
     Ui::MainWindow *ui;
 	QList<QWidget*> mButtons;
-    QThread workerThread;
-    Worker worker;
+    SimulationThread* mSimulationThread;
+	bool mCloseOnFinish;
     QImage image;
     // fast
     int currentTimerID;
@@ -117,12 +74,5 @@ private Q_SLOTS:
     
     void btnpressed();
     void btnreleased();
-Q_SIGNALS:
-    void startSimulation();
 };
-
-
-// We have to know the worker object, from where we where started.
-// We will use that object to communicate with the gui main thread.
-extern Worker* simulationWorker;
 #endif // MAINWINDOW_H

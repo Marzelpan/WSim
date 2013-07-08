@@ -17,7 +17,7 @@ extern "C" {
 #include "src/mainworker.h"
 
 #include "ui.h"
-#include "mainwindow.h"
+#include "simulationthread.h"
 
 #define UNUSED __attribute__((unused))  
 
@@ -105,8 +105,7 @@ int ui_getevent(void)
 	bool shutdown;
 	simulationWorker->getButtonState(buttonUp, buttonDown, shutdown);
 	if (shutdown) {
-		main_end(WSIM_END_NORMAL);
-		return UI_EVENT_NONE;
+		return UI_EVENT_QUIT;
 	}
 	if (!buttonDown && !buttonUp)
 	  return UI_EVENT_NONE;

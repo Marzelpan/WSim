@@ -18,7 +18,16 @@ stamp-h1
 # GUI/Qt intermediate files
 libgui/moc_mainwindow.cpp
 libgui/ui_mainwindow.h
+libgui/moc_simulationthread.cpp
 libgui/libgui.pro.user
+
+# Binaries
+platforms/ez430chronos/adcvalue
+platforms/ez430chronos/wsim
+platforms/ez430chronos/wsimd
+platforms/ez430chronos/wsim-ez430chronos
+platforms/ez430chronos/wsnet1
+utils/wsnet1/src/wsnet1
 
 # Automake
 /aclocal.m4
@@ -33,6 +42,7 @@ libgui/libgui.pro.user
 /cscope.out
 /depcomp
 /install-sh
+utils/wsnet1/config.status
 /missing
 doc/wsim-web/htdocs/
 

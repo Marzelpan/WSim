@@ -6,6 +6,7 @@
  **/
 
 #include "mainwindow.h"
+#include "simulationthread.h"
 #include <QApplication>
 
 /**

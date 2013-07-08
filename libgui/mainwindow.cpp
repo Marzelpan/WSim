@@ -3,82 +3,12 @@
 #include "ui.h"
 #include "config.h"
 #include "gui_defines.h"
-
-/**
-  * Global variables: The commandline arguments have to be global
-  * to be accessable from both threads (gui and simulation).
-  */
-int _argc;
-char** _argv;
-
+#include "simulationthread.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QCloseEvent>
 #include <QDebug>
-#include <QEvent>
-#include <QLabel>
 #include <QVBoxLayout>
-#include <QDebug>
-#include <QQueue>
-#include <QMutexLocker>
-#include <QTime>
-
-Worker* simulationWorker;
-
-void Worker::runSimulation()
-{
-  shutdown = false;
-  framebufferData = 0;
-  qDebug() << "start sim";
-  startWorker(_argc, _argv);
-  qDebug() << "stop sim";
-  shutdown = false;
-  emit finished();
-}
-
-void Worker::stopSimulation()
-{
-	QMutexLocker l(&mMutex);
-  shutdown = true;
-}
-
-void Worker::setWindowData(int w, int h, const char* title, int memsize)
-{
-  this->memsize = memsize;
-  if (framebufferData)
-    free(framebufferData);
-  framebufferData = (uint8_t*)malloc(memsize);
-  emit setGuiSimData(title, w, h, memsize);
-}
- 
-void Worker::copyBitmap(uint8_t* data)
-{
-  memcpy(framebufferData, data, memsize);
-  emit displayBitmap(framebufferData);
-}
- 
-void Worker::setButtonUp(uint32_t b)
-{
-	QMutexLocker l(&mMutex);
-  buttonUp = b;
-}
-
-void Worker::setButtonDown(uint32_t b)
-{
-	QMutexLocker l(&mMutex);
-  buttonDown = b;
-}
-
-void Worker::getButtonState(uint32_t& up,uint32_t& down,bool& shutdown)
-{
-	QMutexLocker l(&mMutex);
-	up = buttonUp;
-	down = buttonDown;
-	shutdown = this->shutdown;
-	
-	buttonUp = 0;
-	buttonDown = 0;
-}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -86,15 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 	ui->actionStop->setEnabled(false);
-    worker.moveToThread(&workerThread);
-    connect(this, SIGNAL(startSimulation()), &worker, SLOT(runSimulation()),Qt::QueuedConnection);
-    connect(&worker, SIGNAL(finished()), this, SLOT(finishedSimulation()),Qt::QueuedConnection);
-    connect(&worker, SIGNAL(setGuiSimData(const QString&, int, int, int)), this, SLOT(setGuiSimData(const QString&, int, int, int)),Qt::QueuedConnection);
-    connect(&worker, SIGNAL(displayBitmap(uint8_t*)), this, SLOT(displayBitmap(uint8_t*)),Qt::QueuedConnection);
-    // set global object simulationWorker. This is used by the simulation c code
-    // to communicate with the gui main thread
-    simulationWorker = &worker;
-	
+	mSimulationThread = 0;
+	mCloseOnFinish = false;
 	on_action_Re_Start_triggered();
 }
 
@@ -105,14 +28,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent* e)
 {
-	worker.stopSimulation();
-	if (workerThread.isRunning()) {
-		workerThread.wait(2000);
-		workerThread.terminate();
-		workerThread.wait(100);
-	}
-	if (workerThread.isRunning()) {
-		qWarning() << "Could not finish simulation thread!";
+	if (mSimulationThread) {
+		mCloseOnFinish = true;
+		mSimulationThread->stopSimulation();
+		return;
 	}
 }
 
@@ -138,20 +57,37 @@ void MainWindow::on_action_Re_Start_triggered()
 	statusBar()->showMessage(tr("Start simulator..."),1000);
 	ui->actionStop->setEnabled(true);
 	ui->action_Re_Start->setEnabled(false);
-	workerThread.start();
-    emit startSimulation();
+	mSimulationThread = new SimulationThread;
+	connect(mSimulationThread, SIGNAL(finished()), mSimulationThread, SLOT(deleteLater()) );
+	connect(mSimulationThread, SIGNAL(finished()), this, SLOT(finishedSimulation()) );
+    connect(mSimulationThread, SIGNAL(setGuiSimData(const QString&, int, int, int)), this, SLOT(setGuiSimData(const QString&, int, int, int)),Qt::QueuedConnection);
+    connect(mSimulationThread, SIGNAL(displayBitmap(uint8_t*)), this, SLOT(displayBitmap(uint8_t*)),Qt::QueuedConnection);
+    // set global object simulationWorker. This is used by the simulation c code
+    // to communicate with the gui main thread
+    simulationWorker = mSimulationThread;
+	
+	mSimulationThread->start();
 }
 
 void MainWindow::on_actionStop_triggered()
 {
-	worker.stopSimulation();
+	if (mSimulationThread)
+		mSimulationThread->stopSimulation();
 }
 
 void MainWindow::finishedSimulation()
 {
-  statusBar()->showMessage(tr("Simulator finished!"),1000);
+  statusBar()->showMessage(tr("Simulator finished!"),3000);
   ui->action_Re_Start->setEnabled(true);
   ui->actionStop->setEnabled(false);
+  // Disable buttons if simulator finished
+  for (int i=0;i<mButtons.size();++i)
+	  mButtons[i]->setEnabled(false);
+  // delete worker
+  mSimulationThread = 0;
+  simulationWorker = 0;
+  if (mCloseOnFinish)
+	  close();
 }
 
 /**
@@ -230,14 +166,18 @@ void MainWindow::setGuiSimData(const QString& title, int w, int h, int memsize)
 
 void MainWindow::btnpressed()
 {
-  wsimButton* btn = (wsimButton*)sender();
-  buttonDown |= btn->buttoncode;
-  worker.setButtonDown(buttonDown);
+	if (!mSimulationThread)
+		return;
+	wsimButton* btn = (wsimButton*)sender();
+	buttonDown |= btn->buttoncode;
+	mSimulationThread->setButtonDown(buttonDown);
 }
 
 void MainWindow::btnreleased()
 {
-  wsimButton* btn = (wsimButton*)sender();
-  buttonUp |= btn->buttoncode;
-  worker.setButtonUp(buttonUp);
+	if (!mSimulationThread)
+		return;
+	wsimButton* btn = (wsimButton*)sender();
+	buttonUp |= btn->buttoncode;
+	mSimulationThread->setButtonUp(buttonUp);
 }
