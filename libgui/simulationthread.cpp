@@ -41,13 +41,13 @@ void SimulationThread::setWindowData(int w, int h, const char* title, int memsiz
   if (framebufferData)
     free(framebufferData);
   framebufferData = (uint8_t*)malloc(memsize);
-  emit setGuiSimData(title, w, h, memsize);
+  emit setGuiSimData(title, w, h, memsize, framebufferData);
 }
  
 void SimulationThread::copyBitmap(uint8_t* data)
 {
   memcpy(framebufferData, data, memsize);
-  emit displayBitmap(framebufferData);
+  emit displayBitmap();
 }
  
 void SimulationThread::setButtonUp(uint32_t b)

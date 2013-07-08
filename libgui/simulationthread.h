@@ -49,8 +49,8 @@ private:
     void run();
 Q_SIGNALS:
     void finished();
-    void setGuiSimData(const QString& title, int w, int h, int memsize);
-    void displayBitmap(uint8_t* data);
+    void setGuiSimData(const QString& title, int w, int h, int memsize, uint8_t* data);
+    void displayBitmap();
 };
 // We have to know the worker object, from where we where started.
 // We will use that object to communicate with the gui main thread.

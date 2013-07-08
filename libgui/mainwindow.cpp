@@ -60,8 +60,8 @@ void MainWindow::on_action_Re_Start_triggered()
 	mSimulationThread = new SimulationThread;
 	connect(mSimulationThread, SIGNAL(finished()), mSimulationThread, SLOT(deleteLater()) );
 	connect(mSimulationThread, SIGNAL(finished()), this, SLOT(finishedSimulation()) );
-    connect(mSimulationThread, SIGNAL(setGuiSimData(const QString&, int, int, int)), this, SLOT(setGuiSimData(const QString&, int, int, int)),Qt::QueuedConnection);
-    connect(mSimulationThread, SIGNAL(displayBitmap(uint8_t*)), this, SLOT(displayBitmap(uint8_t*)),Qt::QueuedConnection);
+    connect(mSimulationThread, SIGNAL(setGuiSimData(const QString&, int, int, int, uint8_t*)), this, SLOT(setGuiSimData(const QString&, int, int, int, uint8_t*)));
+    connect(mSimulationThread, SIGNAL(displayBitmap()), this, SLOT(displayBitmap()));
     // set global object simulationWorker. This is used by the simulation c code
     // to communicate with the gui main thread
     simulationWorker = mSimulationThread;
@@ -83,6 +83,9 @@ void MainWindow::finishedSimulation()
   // Disable buttons if simulator finished
   for (int i=0;i<mButtons.size();++i)
 	  mButtons[i]->setEnabled(false);
+  // draw white background
+  image.fill(Qt::white);
+  displayBitmap();
   // delete worker
   mSimulationThread = 0;
   simulationWorker = 0;
@@ -91,7 +94,7 @@ void MainWindow::finishedSimulation()
 }
 
 /**
-  * Override QApplication timerEvent. Called
+  * Override timerEvent. Called
   * by the Qt event system after setup with startTimer(ms).
   * By default, this method is called every 50ms if new
   * data is available to draw.
@@ -105,39 +108,31 @@ void MainWindow::timerEvent ( QTimerEvent * event ) {
   // start the timer.
   killTimer(currentTimerID);
   currentTimerID = 0;
-  displayBitmap(0);
+  displayBitmap();
 }
   
-void MainWindow::displayBitmap(uint8_t* data)
+void MainWindow::displayBitmap()
 {
-	if (data != 0) {
-		framebufferData = data;
-		// if the gui pixmap update timer is already running, do nothing
-		if (currentTimerID)
-            return;
-		// New data is available: Start the timer and also show the
-		// new pixmap immediatelly.
-		currentTimerID = startTimer(50);
-	}
-    for(int y=0; y < h; y++) {
-      int idx_buff =  y * w * 3;
-      for(int x=0; x < w; x++)
-      {
-        image.setPixel( x,y, qRgb(framebufferData[idx_buff + 0], framebufferData[idx_buff + 1], framebufferData[idx_buff + 2] ));
-        idx_buff += 3;
-      }
-    }
+	// if the gui pixmap update timer is already running, do nothing
+	if (currentTimerID)
+		return;
+	// New data is available: Start the timer and also show the
+	// new pixmap immediatelly.
+	currentTimerID = startTimer(50);
     ui->centralWidget->setPixmap(QPixmap::fromImage(image));
 }
 
-void MainWindow::setGuiSimData(const QString& title, int w, int h, int memsize)
+void MainWindow::setGuiSimData(const QString& title, int w, int h, int memsize, uint8_t* data)
 {
   this->memsize = memsize;
+  this->framebufferData = data;
   this->title = title;
   this->w = w;
   this->h = h;
   resize(w, h);
-  image = QImage(w,h, QImage::Format_RGB888);
+  // We construct a QImage that internally works on the frameData memory. WSim uses
+  // a RGB888 in-memory format.
+  image = QImage(data, w,h, w*3, QImage::Format_RGB888);
   image.fill(Qt::white);
   setWindowTitle(title);
   // Add buttons

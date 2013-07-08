@@ -69,8 +69,8 @@ private Q_SLOTS:
     void on_actionQuit_triggered();
     
     void finishedSimulation();
-    void displayBitmap(uint8_t* data);
-    void setGuiSimData(const QString& title, int w, int h, int memsize);
+    void displayBitmap();
+    void setGuiSimData(const QString& title, int w, int h, int memsize, uint8_t* data);
     
     void btnpressed();
     void btnreleased();
