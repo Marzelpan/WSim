@@ -13,6 +13,7 @@
 #include <QThread>
 #include <QImage>
 #include <QPushButton>
+#include <QList>
 
 #include <inttypes.h>
 
@@ -81,6 +82,7 @@ protected:
   void timerEvent ( QTimerEvent * event );
 private:
     Ui::MainWindow *ui;
+	QList<QWidget*> mButtons;
     QThread workerThread;
     Worker worker;
     QImage image;

@@ -106,7 +106,11 @@ MainWindow::~MainWindow()
 void MainWindow::closeEvent(QCloseEvent* e)
 {
 	worker.stopSimulation();
-	workerThread.wait(2000);
+	if (workerThread.isRunning()) {
+		workerThread.wait(2000);
+		workerThread.terminate();
+		workerThread.wait(100);
+	}
 	if (workerThread.isRunning()) {
 		qWarning() << "Could not finish simulation thread!";
 	}
@@ -131,6 +135,7 @@ void MainWindow::on_actionQuit_triggered()
 
 void MainWindow::on_action_Re_Start_triggered()
 {
+	statusBar()->showMessage(tr("Start simulator..."),1000);
 	ui->actionStop->setEnabled(true);
 	ui->action_Re_Start->setEnabled(false);
 	workerThread.start();
@@ -144,7 +149,7 @@ void MainWindow::on_actionStop_triggered()
 
 void MainWindow::finishedSimulation()
 {
-//   qDebug() << "Emulator beendet!";
+  statusBar()->showMessage(tr("Simulator finished!"),1000);
   ui->action_Re_Start->setEnabled(true);
   ui->actionStop->setEnabled(false);
 }
@@ -201,6 +206,9 @@ void MainWindow::setGuiSimData(const QString& title, int w, int h, int memsize)
   setWindowTitle(title);
   // Add buttons
   QToolBar *bar = ui->mainToolBar;
+  bar->clear();
+  qDeleteAll(mButtons);
+  mButtons.clear();
   
   struct ui_t* machine_ui = get_machine_ui();
   for (int i=0;i<8;++i) {
@@ -208,6 +216,7 @@ void MainWindow::setGuiSimData(const QString& title, int w, int h, int memsize)
 	if (title.isEmpty())
 		continue;
     wsimButton* btn = new wsimButton(title, machine_ui->buttons[i].pin, this);
+	mButtons.append(btn);
     connect(btn, SIGNAL(pressed()), SLOT(btnpressed()));
     connect(btn, SIGNAL(released()), SLOT(btnreleased()));
     bar->addWidget(btn);
