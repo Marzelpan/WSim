@@ -1,9 +1,7 @@
-
 /**
- *  \file   mainwindow.h
- *  \brief  WorldSens Simulator UI Definition
- *  \author David Gräff
- *  \date   2013
+ *  \brief  Graphical UI using the Qt Toolkit (version 4.6+)
+ *  \author David Graeff <david.graeff@web.de>
+ *  \date   2013, June
  **/
 
 #ifndef MAINWINDOW_H
@@ -67,6 +65,7 @@ private Q_SLOTS:
     void on_actionStop_triggered();
     void on_action_Re_Start_triggered();
     void on_actionQuit_triggered();
+    void on_actionAbout_triggered();
     
     void finishedSimulation();
     void displayBitmap();

@@ -1,4 +1,9 @@
-// #include "arch/common/hardware.h"
+/**
+ *  \brief  Graphical UI using the Qt Toolkit (version 4.6+)
+ *  \author David Graeff <david.graeff@web.de>
+ *  \date   2013, June
+ **/
+
 #include "src/mainworker.h"
 #include "ui.h"
 #include "config.h"
@@ -8,7 +13,9 @@
 #include "ui_mainwindow.h"
 #include <QCloseEvent>
 #include <QDebug>
-#include <QVBoxLayout>
+#include <QPainter>
+#include <QFontMetrics>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -75,22 +82,41 @@ void MainWindow::on_actionStop_triggered()
 		mSimulationThread->stopSimulation();
 }
 
+void MainWindow::on_actionAbout_triggered()
+{
+	QMessageBox::about(this, tr("About"), tr("Graphical UI for WSim using the Qt Toolkit.\n"
+	"David Graeff, copyright 2013\n"
+	"Based on Antoine Fraboulets code, copyright 2005"
+	));
+}
+
 void MainWindow::finishedSimulation()
 {
-  statusBar()->showMessage(tr("Simulator finished!"),3000);
-  ui->action_Re_Start->setEnabled(true);
-  ui->actionStop->setEnabled(false);
-  // Disable buttons if simulator finished
-  for (int i=0;i<mButtons.size();++i)
-	  mButtons[i]->setEnabled(false);
-  // draw white background
-  image.fill(Qt::white);
-  displayBitmap();
-  // delete worker
-  mSimulationThread = 0;
-  simulationWorker = 0;
-  if (mCloseOnFinish)
-	  close();
+	statusBar()->showMessage(tr("Simulator finished!"),3000);
+	ui->action_Re_Start->setEnabled(true);
+	ui->actionStop->setEnabled(false);
+	// Disable buttons if simulator finished
+	for (int i=0;i<mButtons.size();++i)
+		mButtons[i]->setEnabled(false);
+	// draw white background and text
+	image.fill(Qt::white);
+	QPainter painter;
+	painter.begin(&image);
+	painter.setPen(QColor(Qt::black)); // The font color comes from user select on a QColorDialog
+	painter.setCompositionMode(QPainter::CompositionMode_Source);
+	QFont f = font();
+	f.setPointSize(20);
+	painter.setFont(f);
+	QString t = tr("No simulation running!");
+	painter.drawText((w-QFontMetrics(f).width(t))/2, h/2, t);  // Draw a number on the image
+	
+	painter.end();
+	displayBitmap();
+	// delete worker
+	mSimulationThread = 0;
+	simulationWorker = 0;
+	if (mCloseOnFinish)
+		close();
 }
 
 /**
