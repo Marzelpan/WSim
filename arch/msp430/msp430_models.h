@@ -606,9 +606,11 @@ typedef struct _infomem_t infomem_t;
 	#define __msp430_have_xt2
 
 	//uscia uscib
-  #define __msp430_have_uscia0  /* uart/lin + IrDA + SPI */
-  #define __msp430_have_uscib0  /* SPI + I2C             */
-
+	#define __msp430_have_uscia0
+	#define __msp430_have_uscib0
+	#define __msp430_have_new_uscia
+	#define __msp430_have_new_uscib
+	
 	// 8 bit blocks
 	#define __msp430_have_portmap
 	#define __msp430_have_port1
@@ -629,7 +631,14 @@ typedef struct _infomem_t infomem_t;
 	#define __msp430_have_rtc
 	#define __msp430_have_new_sfr
 	#define __msp430_have_adc12
-
+	#define __msp430_have_cc1101
+	#if !defined(CC1100)
+	#define CC1100
+	#endif
+	#if !defined(CC1101MM)
+	#define CC1101MM
+	#endif
+		
 	// Flash erase timings
 	#define FLASH_WRITE_TIMING_BYTE       30
 	#define FLASH_WRITE_TIMING_FSTBYTE    25

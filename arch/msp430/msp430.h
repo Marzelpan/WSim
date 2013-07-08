@@ -48,6 +48,10 @@
 #include "msp430_portmap.h"
 #include "msp430_rtc.h"
 
+#if defined(__msp430_have_cc1101)
+#include "devices/cc1100_2500/cc1101mm_dev.h"
+#endif
+
   /**
    * 0x0ffff
    *    interrupt vector table
@@ -235,7 +239,11 @@ struct msp430_mcu_t {
 #if defined(__msp430_have_rtc)
   struct msp430_rtc_t          rtc;
 #endif
-
+  
+#if defined(__msp430_have_cc1101)
+  struct _msp430_cc1101_t xx_cc1101;
+#endif
+  
 #if defined(SOFT_INTR)
   int      soft_intr;
   uint64_t soft_intr_timeend;
@@ -260,6 +268,7 @@ extern struct msp430_mcu_t mcu_backup;
 #define MCU_FLASH          MCU.flash
 #define MCU_RAM            MCU.ram
 #define MCU_DMA            MCU.dma
+#define MCU_RFCC1101       MCU.xx_cc1101
 
 #if defined(__msp430_have_basic_clock)
 #define MCU_CLOCK          MCU.basic_clock

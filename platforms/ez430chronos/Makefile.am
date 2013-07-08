@@ -10,7 +10,7 @@ EZ430CHRONOS_DEV= ../../devices/led/libled.a \
 		  ../../devices/cma3000_spi/libcma3000_spi.a \
 		  ../../devices/scp1000_i2c/libscp1000_i2c.a \
 		  ../../devices/ez430_lcd/libez430_lcd.a \
-		  ../../devices/cc1100_2500/libcc1100.a
+		  ../../devices/cc1100_2500/libcc1101mm.a
 
 
 ## v1: model

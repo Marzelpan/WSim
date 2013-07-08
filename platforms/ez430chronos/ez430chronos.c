@@ -87,9 +87,10 @@
 #define SCA3000    2
 #define SCP1000    3
 #define LCD        4
+#define CC1101MM_DEV   5
 
-#define END_DEV           LCD
-#define BOARD_DEVICE_MAX (END_DEV+1)
+#define END_DEV           CC1101MM_DEV
+#define BOARD_DEVICE_MAX (END_DEV)
 
 #define NAME "ez430chronos"
 
@@ -196,6 +197,7 @@ int devices_create(void)
     machine.device_size[SCA3000] = cma3000_spi_device_size();
     machine.device_size[SCP1000] = scp1000_i2c_device_size();
     machine.device_size[LCD] = ez430_lcd_device_size();
+	machine.device_size[CC1101MM_DEV] = 0;
 
     /*********************************/
     /* allocate memory               */
@@ -310,9 +312,9 @@ int devices_update(void)
         machine.device[SCP1000].write(SCP1000, SCP1000_I2C_SCL_MASK, BIT(val8, 3) << SCP1000_I2C_SCL_SHIFT);
     }
 
-    /*if (msp430_uscib0_dev_read_spi(&val8)) {
+    if (msp430_uscib0_dev_read_spi(&val8)) {
         machine.device[SCA3000].write(SCA3000, CMA3000_SPI_D, val8);
-    } */
+    }
 
     /* LCD :                             */
     /* =====                             */
@@ -334,9 +336,9 @@ int devices_update(void)
         uint32_t mask = 0;
         uint32_t value = 0;
         machine.device[ SCA3000 ].read(SCA3000, &mask, &value);
-        /*if (mask & CMA3000_SPI_D) {
+        if (mask & CMA3000_SPI_D) {
             msp430_uscib0_dev_write_spi(value & CMA3000_SPI_D);
-        }*/
+        }
         /* INT -> P2.5*/
         if (mask & CMA3000_SPI_INT_MASK) {
             msp430_digiIO_dev_write(PORT2, (CMA3000_SPI_INT_MASK & value) ? 0x00 : 0x20, 0x20);

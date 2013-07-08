@@ -209,7 +209,11 @@ int msp430_mcu_create(int xt1)
   msp430_lcd_create();
   msp430_lcdb_create();
   msp430_rtc_create();
-
+  
+#if defined(__msp430_have_cc1101)
+  cc1101mm_create();
+#endif
+  
   MCU_CLOCK.lfxt1_freq = xt1;
 #if defined(__msp430_have_xt2)
   MCU_CLOCK.xt2_freq   = xt2;
@@ -298,7 +302,10 @@ void mcu_reset()
   msp430_lcd_reset();
   msp430_lcdb_reset();
   msp430_rtc_reset();
-
+#if defined(__msp430_have_cc1101)
+  cc1101mm_reset();
+#endif
+  
 #if defined(SOFT_INTR)
   MCU.soft_intr         = 0;
   MCU.soft_intr_timeend = 0;
@@ -359,7 +366,12 @@ void msp430_devices_update(unsigned int cycles)
 void mcu_update_done()
 {
   uint32_t signal;
-    
+  
+#if defined(__msp430_have_cc1101)
+  /* radio update must be done at end of peripheral evaluation */
+  cc1101mm_update();
+#endif
+  
   /* timers capture operations                    */
   msp430_timerA_capture();
   msp430_timerB_capture();
