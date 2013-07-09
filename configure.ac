@@ -2,15 +2,35 @@ dnl -*-m4-*-
 dnl Process this file with autoconf to produce a configure script.
 dnl --------------------------------------------------------------
 dnl configure.ac for Worldsens architecture simulator
-dnl works only for automake 1.10 and above 
+dnl works only for automake 1.11 and above 
 dnl lower versions will have problem with bzero prototype replacement
+dnl and do not support AM_SILENT_RULES
 dnl --------------------------------------------------------------
 AC_INIT([wsim],[0.99])
 AC_CONFIG_SRCDIR(src/main.c)
 AC_CANONICAL_HOST
 AM_INIT_AUTOMAKE(foreign) dnl foreign = NEWS/TODO not required
+
+dnl --------------------------------------------------------------
+dnl Make the build less verbose
+dnl --------------------------------------------------------------
+AM_SILENT_RULES([yes])
+if make --help 2>&1 | grep -q no-print-directory; then
+   AM_MAKEFLAGS="$AM_MAKEFLAGS --no-print-directory";
+fi
+
+if make --help 2>&1 | grep -q quiet; then
+   AM_MAKEFLAGS="$AM_MAKEFLAGS --quiet"
+fi
+
+if libtool --help 2>&1 | grep -q quiet; then
+   AM_LIBTOOLFLAGS="--quiet";
+fi
+AC_SUBST(AM_MAKEFLAGS)
+AC_SUBST(AM_LIBTOOLFLAGS)
+
 AC_CONFIG_HEADERS([config.h])
- 
+
 dnl --------------------------------------------------------------
 dnl Checks for programs.
 dnl --------------------------------------------------------------
