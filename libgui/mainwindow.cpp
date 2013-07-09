@@ -68,7 +68,7 @@ void MainWindow::on_action_Re_Start_triggered()
 	connect(mSimulationThread, SIGNAL(finished()), mSimulationThread, SLOT(deleteLater()) );
 	connect(mSimulationThread, SIGNAL(finished()), this, SLOT(finishedSimulation()) );
     connect(mSimulationThread, SIGNAL(setGuiSimData(const QString&, int, int, int, uint8_t*)), this, SLOT(setGuiSimData(const QString&, int, int, int, uint8_t*)));
-    connect(mSimulationThread, SIGNAL(displayBitmap()), this, SLOT(displayBitmap()));
+    connect(mSimulationThread, SIGNAL(displayBitmap()), this, SLOT(updateBitmap()));
     // set global object simulationWorker. This is used by the simulation c code
     // to communicate with the gui main thread
     simulationWorker = mSimulationThread;
@@ -98,6 +98,10 @@ void MainWindow::finishedSimulation()
 	// Disable buttons if simulator finished
 	for (int i=0;i<mButtons.size();++i)
 		mButtons[i]->setEnabled(false);
+  // stop draw timer
+  if (currentTimerID)
+    killTimer(currentTimerID);
+  currentTimerID = 0;
 	// draw white background and text
 	image.fill(Qt::white);
 	QPainter painter;
@@ -109,9 +113,9 @@ void MainWindow::finishedSimulation()
 	painter.setFont(f);
 	QString t = tr("No simulation running!");
 	painter.drawText((w-QFontMetrics(f).width(t))/2, h/2, t);  // Draw a number on the image
-	
 	painter.end();
-	displayBitmap();
+	ui->centralWidget->setPixmap(QPixmap::fromImage(image));
+  
 	// delete worker
 	mSimulationThread = 0;
 	simulationWorker = 0;
@@ -136,16 +140,25 @@ void MainWindow::timerEvent ( QTimerEvent * event ) {
   currentTimerID = 0;
   displayBitmap();
 }
-  
+
+void MainWindow::updateBitmap()
+{
+  // if the gui pixmap update timer is already running, do nothing
+  if (currentTimerID)
+    return;
+
+  // New data is available: Start the timer and also show the
+  // new pixmap immediatelly.
+  currentTimerID = startTimer(50);
+  displayBitmap();
+}
+
 void MainWindow::displayBitmap()
 {
-	// if the gui pixmap update timer is already running, do nothing
-	if (currentTimerID)
-		return;
-	// New data is available: Start the timer and also show the
-	// new pixmap immediatelly.
-	currentTimerID = startTimer(50);
+    printf("pic2\n");
+    mSimulationThread->beginBitmapAccess();
     ui->centralWidget->setPixmap(QPixmap::fromImage(image));
+    mSimulationThread->endBitmapAccess();
 }
 
 void MainWindow::setGuiSimData(const QString& title, int w, int h, int memsize, uint8_t* data)

@@ -66,7 +66,6 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionQuit">
    <property name="icon">
-    <iconset theme="application-exit"/>
    </property>
    <property name="text">
     <string>Quit</string>
@@ -74,7 +73,6 @@
   </action>
   <action name="action_Re_Start">
    <property name="icon">
-    <iconset theme="media-playback-start"/>
    </property>
    <property name="text">
     <string>(Re)Start</string>
@@ -82,7 +80,6 @@
   </action>
   <action name="actionStop">
    <property name="icon">
-    <iconset theme="media-playback-stop"/>
    </property>
    <property name="text">
     <string>Stop</string>
@@ -90,7 +87,6 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset theme="help-about"/>
    </property>
    <property name="text">
     <string>About</string>

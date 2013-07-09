@@ -61,6 +61,7 @@ private:
       wsimButton(const QString& title, int buttoncode, QWidget* parent = 0) : QPushButton(title, parent) {this->buttoncode = buttoncode;}
   };
 
+    void displayBitmap();
 private Q_SLOTS:
     void on_actionStop_triggered();
     void on_action_Re_Start_triggered();
@@ -68,7 +69,7 @@ private Q_SLOTS:
     void on_actionAbout_triggered();
     
     void finishedSimulation();
-    void displayBitmap();
+    void updateBitmap(); // called by the simulation thread if new bitmap data is available
     void setGuiSimData(const QString& title, int w, int h, int memsize, uint8_t* data);
     
     void btnpressed();

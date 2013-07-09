@@ -27,6 +27,8 @@ void SimulationThread::run()
 {
   shutdown = false;
   framebufferData = 0;
+  buttonUp = 0;
+  buttonDown = 0;
   qDebug() << "start sim";
   simulationMain(_argc, _argv);
   qDebug() << "stop sim";
@@ -51,10 +53,21 @@ void SimulationThread::setWindowData(int w, int h, const char* title, int memsiz
  
 void SimulationThread::copyBitmap(uint8_t* data)
 {
+  QMutexLocker l(&mBitmapMutex);
   memcpy(framebufferData, data, memsize);
   emit displayBitmap();
 }
- 
+
+void SimulationThread::beginBitmapAccess()
+{
+  mBitmapMutex.lock();
+}
+
+void SimulationThread::endBitmapAccess()
+{
+  mBitmapMutex.unlock();
+}
+
 void SimulationThread::setButtonUp(uint32_t b)
 {
 	QMutexLocker l(&mMutex);

@@ -107,9 +107,9 @@ int ui_getevent(void)
 	if (shutdown) {
 		return UI_EVENT_QUIT;
 	}
-	if (!buttonDown && !buttonUp)
+	if (!buttonDown && !buttonUp) {
 	  return UI_EVENT_NONE;
-	else {
+  } else {
 		GUI_DATA_MACHINE.b_up = buttonUp;
 		GUI_DATA_MACHINE.b_down = buttonDown;
 		return UI_EVENT_USER;

@@ -32,6 +32,10 @@ public:
 	// draw the pixmap immediatelly here, but notify
 	// the Qt event system of new pixmap data
 	void copyBitmap(uint8_t* data);
+  // Use begin/end bitmap access methods to get the bitmap lock
+  // and release it
+  void beginBitmapAccess();
+  void endBitmapAccess();
 	void stopSimulation();
     void setButtonUp(uint32_t);
     void setButtonDown(uint32_t);
@@ -41,6 +45,7 @@ public:
 private:
     uint8_t* framebufferData;
 	QMutex mMutex;
+  QMutex mBitmapMutex;
     uint32_t buttonUp;
     uint32_t buttonDown;
 	bool shutdown;
