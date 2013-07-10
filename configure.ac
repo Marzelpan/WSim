@@ -105,7 +105,7 @@ dnl ============
 CFLAGS_save="${CFLAGS}"
 AC_ARG_ENABLE([debug],AS_HELP_STRING([--enable-debug],[wsim debug mode (default enabled)]))
 if test "${enable_debug}" != "no"; then
-    CFLAGS="$CFLAGS -g"
+    CFLAGS="$CFLAGS -g -rdynamic"
     AC_DEFINE([DEBUG],[1],[WSim internals debug tools])
     debug_sum="yes"
 else
