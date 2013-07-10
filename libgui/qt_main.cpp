@@ -17,6 +17,8 @@ int main(int argc, char* argv[])
   _argc = argc;
   _argv = argv;
   QApplication app(argc, argv);
+  app.setApplicationName("wsim");
+  app.setOrganizationDomain ("org.wsim");
   MainWindow w;
   w.show();
   app.exec();

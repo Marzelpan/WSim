@@ -48,6 +48,7 @@ void SimulationThread::setWindowData(int w, int h, const char* title, int memsiz
   if (framebufferData)
     free(framebufferData);
   framebufferData = (uint8_t*)malloc(memsize);
+  memset(framebufferData, 0, memsize);
   emit setGuiSimData(title, w, h, memsize, framebufferData);
 }
  

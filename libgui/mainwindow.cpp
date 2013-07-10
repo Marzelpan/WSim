@@ -16,12 +16,25 @@
 #include <QPainter>
 #include <QFontMetrics>
 #include <QMessageBox>
+#include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow), currentTimerID(0)
 {
     ui->setupUi(this);
+    ui->centralWidget->setScaledContents(false);
+    ui->centralWidget->setAlignment(Qt::AlignCenter);
+    ui->actionQuit->setIcon(QIcon::fromTheme("application-exit"));
+    ui->actionQuit->setIconVisibleInMenu(true);
+    ui->actionAbout->setIcon(QIcon::fromTheme("help-about"));
+    ui->actionAbout->setIconVisibleInMenu(true);
+    ui->action_Re_Start->setIcon(QIcon::fromTheme("media-playback-start"));
+    ui->action_Re_Start->setIconVisibleInMenu(true);
+    ui->actionStop->setIcon(QIcon::fromTheme("media-playback-stop"));
+    ui->actionStop->setIconVisibleInMenu(true);
+    restoreState(QSettings().value("mainwindow/state").toByteArray());
+    restoreGeometry(QSettings().value("mainwindow/geometry").toByteArray());
 	ui->actionStop->setEnabled(false);
 	mSimulationThread = 0;
 	mCloseOnFinish = false;
@@ -35,11 +48,14 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent* e)
 {
+  QSettings().setValue("mainwindow/state", saveState());
+  QSettings().setValue("mainwindow/geometry", saveGeometry());
 	if (mSimulationThread) {
 		mCloseOnFinish = true;
 		mSimulationThread->stopSimulation();
-		return;
+		e->accept();
 	}
+	QMainWindow::closeEvent(e);
 }
 
 void MainWindow::changeEvent(QEvent *e)
@@ -62,6 +78,8 @@ void MainWindow::on_actionQuit_triggered()
 void MainWindow::on_action_Re_Start_triggered()
 {
 	statusBar()->showMessage(tr("Start simulator..."),1000);
+  buttonDown = 0;
+  buttonUp = 0;
 	ui->actionStop->setEnabled(true);
 	ui->action_Re_Start->setEnabled(false);
 	mSimulationThread = new SimulationThread;
@@ -103,11 +121,10 @@ void MainWindow::finishedSimulation()
     killTimer(currentTimerID);
   currentTimerID = 0;
 	// draw white background and text
-	image.fill(Qt::white);
 	QPainter painter;
 	painter.begin(&image);
+  painter.fillRect(image.rect(), QColor(Qt::white));
 	painter.setPen(QColor(Qt::black)); // The font color comes from user select on a QColorDialog
-	painter.setCompositionMode(QPainter::CompositionMode_Source);
 	QFont f = font();
 	f.setPointSize(20);
 	painter.setFont(f);
@@ -155,7 +172,6 @@ void MainWindow::updateBitmap()
 
 void MainWindow::displayBitmap()
 {
-    printf("pic2\n");
     mSimulationThread->beginBitmapAccess();
     ui->centralWidget->setPixmap(QPixmap::fromImage(image));
     mSimulationThread->endBitmapAccess();
@@ -168,11 +184,9 @@ void MainWindow::setGuiSimData(const QString& title, int w, int h, int memsize, 
   this->title = title;
   this->w = w;
   this->h = h;
-  resize(w, h);
   // We construct a QImage that internally works on the frameData memory. WSim uses
   // a RGB888 in-memory format.
   image = QImage(data, w,h, w*3, QImage::Format_RGB888);
-  image.fill(Qt::white);
   setWindowTitle(title);
   // Add buttons
   QToolBar *bar = ui->mainToolBar;
@@ -192,10 +206,10 @@ void MainWindow::setGuiSimData(const QString& title, int w, int h, int memsize, 
     bar->addWidget(btn);
   }
   
-  ui->centralWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-  ui->centralWidget->setScaledContents(true);
-  ui->centralWidget->resize(w,h);
-  
+  int buttonsWidth = qMax(w, ui->mainToolBar->sizeHint().width());
+  ui->centralWidget->resize(buttonsWidth ,h);  
+  if (this->width() << buttonsWidth)
+    this->resize(buttonsWidth, this->height());
 }
 
 void MainWindow::btnpressed()
@@ -204,6 +218,7 @@ void MainWindow::btnpressed()
 		return;
 	wsimButton* btn = (wsimButton*)sender();
 	buttonDown |= btn->buttoncode;
+  buttonUp &= ~btn->buttoncode;
 	mSimulationThread->setButtonDown(buttonDown);
 }
 
@@ -213,5 +228,6 @@ void MainWindow::btnreleased()
 		return;
 	wsimButton* btn = (wsimButton*)sender();
 	buttonUp |= btn->buttoncode;
+  buttonDown &= ~btn->buttoncode;
 	mSimulationThread->setButtonUp(buttonUp);
 }
