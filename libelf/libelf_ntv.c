@@ -878,9 +878,7 @@ int libelf_symtab_find_size_by_name(elf32_t elf, const char *name)
 /* ************************************************** */
 /* ************************************************** */
 
-// Do not enabled this!!! On gcc>=4.6 it will cause strange errors because
-// the .nodata section will be overriden
-//#define MSP430_DATA_INIT_WORKAROUND 1
+#define MSP430_DATA_INIT_WORKAROUND 1
 
 static void libelf_load_section(elf32_t elf, int n, int UNUSED verbose_level)
 {
@@ -910,6 +908,11 @@ static void libelf_load_section(elf32_t elf, int n, int UNUSED verbose_level)
 		    text_end    = s->sh_addr + s->sh_size;
 		  }
 		
+		if (strcmp(libelf_get_elf_section_name(elf,n),".rodata") == 0)
+		  {
+		    text_end    = s->sh_addr + s->sh_size;
+		  }
+		  
 		if (strcmp(libelf_get_elf_section_name(elf,n),".data") == 0)
 		  {
 		    if (text_end == 0)
