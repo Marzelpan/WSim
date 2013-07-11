@@ -878,7 +878,9 @@ int libelf_symtab_find_size_by_name(elf32_t elf, const char *name)
 /* ************************************************** */
 /* ************************************************** */
 
-#define MSP430_DATA_INIT_WORKAROUND 1
+// Do not enabled this!!! On gcc>=4.6 it will cause strange errors because
+// the .nodata section will be overriden
+//#define MSP430_DATA_INIT_WORKAROUND 1
 
 static void libelf_load_section(elf32_t elf, int n, int UNUSED verbose_level)
 {
@@ -894,8 +896,8 @@ static void libelf_load_section(elf32_t elf, int n, int UNUSED verbose_level)
 	if (s->sh_flags & elf_sh_flags_ALLOC)
 	  {
 	    DMSG_LIB_ELF("libelf: looking at section %s\n",libelf_get_elf_section_name(elf,n));
-	    DMSG_LIB_ELF("libelf:    - allocating %d bytes at 0x%04x\n",s->sh_size,s->sh_addr);
-	    DMSG_LIB_ELF("libelf:    - copying 0x%04x bytes from file to 0x%04x in mem\n",s->sh_size,s->sh_addr);
+	    DMSG_LIB_ELF("libelf:    allocating at 0x%04x; copying %d bytes from file to mem (0x%04x-0x%04x)\n",
+			   s->sh_addr,s->sh_size,s->sh_addr,s->sh_addr+s->sh_size-1);
 	    mcu_jtag_write_section(elf->file_raw + s->sh_offset, s->sh_addr, s->sh_size);
 	    DMSG_LIB_ELF_DMP("\n");
 	    libelf_dump_section(elf->file_raw, s->sh_offset, s->sh_size, DUMP_COLS);
