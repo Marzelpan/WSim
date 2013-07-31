@@ -691,9 +691,8 @@ void options_read_cmdline(struct options_t *s, int *argc, char *argv[])
     {
       OPT_WARNING("\n==================================================\n");
       OPT_WARNING(" wsnet mode cannot be used with the realtime option\n");
-      OPT_WARNING(" realtime mode nevertheless activated!\n");
       OPT_WARNING("\n==================================================\n");
-//       s->realtime = 0;
+       s->realtime = 0;
     }
 
   OPT_DMSG("parseindex = %d, argc = %d\n",parseindex,*argc);
