@@ -38,7 +38,7 @@
 #define DEFAULT_MULTICAST_IP       "224.0.0.1"
 #define DEFAULT_MULTICAST_PORT     9999
 #define DEFAULT_NODE_ID            1
-#define DEFAULT_REALTIME           0
+#define DEFAULT_REALTIME           1
 
 /* ************************************************** */
 /* ************************************************** */
