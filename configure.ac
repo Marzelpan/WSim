@@ -458,11 +458,13 @@ if test "$ac_cv_func_strtok_r" = yes; then
    AC_DEFINE(FUNC_STRTOK_R_DEFINED, [1], [Check if strtok_r() is available])
 fi
 
-dnl AC_CHECK_FUNC(nothl)
+dnl AC_CHECK_FUNC(ntohl)
 dnl if test "$ac_cv_func_ntohl" = yes; then
 dnl    AC_DEFINE(FUNC_NTOHL_DEFINED, [1], [Check if ntohl() is available])
 dnl fi
 
+dnl Check for htonll
+AC_CHECK_DECLS([htonll, ntohll])
 
 dnl --------------------------------------------------------------
 dnl Checks for binutils (bfd) for msp430

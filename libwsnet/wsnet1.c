@@ -135,10 +135,10 @@ static inline type name (type v)   \
 
 #endif
 
-#ifndef ntohll
+#if !HAVE_DECL_NTOHLL
     SWAP8( ntohll,  uint64_t )
 #endif
-#ifndef htonll
+#if !HAVE_DECL_HTONLL
     SWAP8( htonll,  uint64_t )
 #endif
 SWAP8( ntohdbl, double   )
